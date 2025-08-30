@@ -1,0 +1,70 @@
+const express = require('express');
+const { getRooms, getRoom, createRoom, updateRoom, deleteRoom } = require('../controllers/rooms');
+const mapRoom = require('../helpers/mapRoom');
+const authenticated = require('../middlewares/authenticated');
+const isAdmin = require('../middlewares/isAdmin');
+
+const router = express.Router({ mergeParams: true });
+
+router.get('/', async (req, res) => {
+	try {
+		const rooms = await getRooms();
+
+		res.send({ data: rooms.map(mapRoom) });
+	} catch (error) {
+		res.send({ error: error.message || 'Ошибка при получении номеров' });
+	}
+});
+
+router.get('/:id', async (req, res) => {
+	try {
+		const room = await getRoom(req.params.id);
+
+		if (!room) {
+			throw new Error('Номер не найден');
+		}
+
+		res.send({ data: mapRoom(room) });
+	} catch (error) {
+		res.send({ error: error.message || 'Ошибка при получении номера' });
+	}
+});
+
+router.post('/', authenticated, isAdmin(), async (req, res) => {
+	try {
+		const room = await createRoom(req.body);
+		res.send({ data: mapRoom(room) });
+	} catch (error) {
+		res.send({ error: error.message || 'Ошибка при создании номера' });
+	}
+});
+
+router.patch('/:id', authenticated, isAdmin(), async (req, res) => {
+	try {
+		const room = await updateRoom(req.params.id, req.body);
+
+		if (!room) {
+			throw new Error('Номер не найден');
+		}
+
+		res.send({ data: mapRoom(room) });
+	} catch (error) {
+		res.send({ error: error.message || 'Ошибка при обновлении номера' });
+	}
+});
+
+router.delete('/:id', authenticated, isAdmin(), async (req, res) => {
+	try {
+		const room = await deleteRoom(req.params.id);
+
+		if (!room) {
+			throw new Error('Номер не найден');
+		}
+
+		res.send({ data: 'Номер успешно удален' });
+	} catch (error) {
+		res.send({ error: error.message || 'Ошибка при удалении номера' });
+	}
+});
+
+module.exports = router;
