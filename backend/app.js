@@ -5,7 +5,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-// const routes = require('./routes');
+const routes = require('./routes');
 
 const port = 3002;
 const app = express();
@@ -21,7 +21,7 @@ app.get('/api/test', (req, res) => {
 	res.json({ message: 'Backend is alive and connected to MongoDB!' });
 });
 
-// app.use('/api', routes);
+app.use('/api', routes);
 
 // app.get('/{*path}', (req, res) => {
 // 	res.sendFile(path.resolve('..', 'frontend', 'dist', 'index.html'));
