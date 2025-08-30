@@ -17,18 +17,21 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 app.use(express.json());
 
+app.get('/api/test', (req, res) => {
+	res.json({ message: 'Backend is alive and connected to MongoDB!' });
+});
+
 // app.use('/api', routes);
 
 // app.get('/{*path}', (req, res) => {
 // 	res.sendFile(path.resolve('..', 'frontend', 'dist', 'index.html'));
 // });
 
-app.get('/api/test', (req, res) => {
-	res.json({ message: 'Backend is alive!' });
-});
-
-mongoose.connect(process.env.MONGODB_URL).then(() => {
-	app.listen(port, () => {
-		console.log(`Сервер запущен на порту ${port}`);
+mongoose
+	.connect(process.env.MONGODB_URL)
+	.then(() => console.log('MongoDB подключен успешно!'))
+	.then(() => {
+		app.listen(port, () => {
+			console.log(`Сервер запущен на порту ${port}`);
+		});
 	});
-});
