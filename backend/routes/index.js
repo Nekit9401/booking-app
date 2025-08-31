@@ -4,5 +4,6 @@ const router = express.Router({ mergeParams: true });
 
 router.use('/', require('./auth'));
 router.use('/rooms', require('./rooms'));
+router.use('/bookings', require('./bookings'));
 
 module.exports = router;
