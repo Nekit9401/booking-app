@@ -21,7 +21,7 @@ const createBooking = async (bookingData) => {
 
 	const isAvailable = await checkRoomAvailability(room, checkIn, checkOut);
 	if (!isAvailable) {
-		throw new Error('Бронирование не доступно на выбранную дату');
+		throw new Error('Номер недоступен на выбранные даты');
 	}
 
 	const booking = await Booking.create(bookingData);
@@ -70,7 +70,7 @@ const updateBooking = async (bookingId, userId, updatedData, isAdmin = false) =>
 	}
 
 	if (String(booking.user) !== userId && !isAdmin) {
-		throw new Error('Недостаточно прав для отмены бронирования');
+		throw new Error('Недостаточно прав для изменения бронирования');
 	}
 
 	const isAvailable = await checkRoomAvailability(room, checkIn, checkOut);

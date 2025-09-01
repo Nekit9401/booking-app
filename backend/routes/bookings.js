@@ -18,7 +18,7 @@ router.get('/my', authenticated, async (req, res) => {
 		const bookings = await getUserBookings(req.user.id);
 		res.send({ data: bookings.map(mapBooking) });
 	} catch (error) {
-		res.send({ error: error.message || 'Ошибка при получении бронирований' });
+		res.status(500).send({ error: error.message || 'Ошибка при получении бронирований' });
 	}
 });
 
@@ -27,7 +27,7 @@ router.get('/', authenticated, isAdmin(), async (req, res) => {
 		const bookings = await getAllBookings();
 		res.send({ data: bookings.map(mapBooking) });
 	} catch (error) {
-		res.send({ error: error.message || 'Ошибка при получении бронирований' });
+		res.status(500).send({ error: error.message || 'Ошибка при получении бронирований' });
 	}
 });
 
@@ -39,7 +39,11 @@ router.post('/', authenticated, async (req, res) => {
 		});
 		res.send({ data: mapBooking(booking) });
 	} catch (error) {
-		res.send({ error: error.message || 'Ошибка при создании бронирования' });
+		if (error.message === 'Номер недоступен на выбранные даты') {
+			res.status(409).send({ error: error.message });
+		} else {
+			res.status(500).send({ error: error.message || 'Ошибка при создании бронирования' });
+		}
 	}
 });
 
@@ -49,12 +53,18 @@ router.patch('/:id', authenticated, async (req, res) => {
 		const booking = await updateBooking(req.params.id, req.user.id, req.body, isAdminUser);
 
 		if (!booking) {
-			throw new Error('Бронь не найдена!');
+			return res.status(404).send({ error: 'Бронь не найдена!' });
 		}
 
 		res.send({ data: mapBooking(booking) });
 	} catch (error) {
-		res.send({ error: error.message || 'Ошибка при изменении бронирования' });
+		if (error.message === 'Недостаточно прав для изменения бронирования') {
+			res.status(403).send({ error: error.message });
+		} else if (error.message === 'Номер недоступен на выбранные даты') {
+			res.status(409).send({ error: error.message });
+		} else {
+			res.status(500).send({ error: error.message || 'Ошибка при изменении бронирования' });
+		}
 	}
 });
 
@@ -64,12 +74,16 @@ router.patch('/:id/cancel', authenticated, async (req, res) => {
 		const booking = await cancelBooking(req.params.id, req.user.id, isAdminUser);
 
 		if (!booking) {
-			throw new Error('Бронь не найдена!');
+			return res.status(404).send({ error: 'Бронь не найдена!' });
 		}
 
 		res.send({ data: mapBooking(booking) });
 	} catch (error) {
-		res.send({ error: error.message || 'Ошибка при изменении бронирования' });
+		if (error.message === 'Недостаточно прав для отмены бронирования') {
+			res.status(403).send({ error: error.message });
+		} else {
+			res.status(500).send({ error: error.message || 'Ошибка при отмене бронирования' });
+		}
 	}
 });
 
