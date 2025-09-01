@@ -3,6 +3,11 @@ import { HomePage } from './pages/HomePage';
 import { MainLayout } from './components/MainLayout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AdminRoute } from './components/AdminRoute';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
+import { RoomPage } from './pages/RoomPage';
+import { MyBookingsPage } from './pages/MyBookingsPage';
+import { AdminPage } from './pages/AdminPage';
 
 export const App = () => {
 	return (

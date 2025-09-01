@@ -9,11 +9,11 @@ const Title = styled.h1`
 	margin-bottom: 20px;
 `;
 
-export const HomePage = () => {
+export const AdminPage = () => {
 	return (
 		<Container>
-			<Title>Доступные номера</Title>
-			<p>Список номеров появится здесь скоро...</p>
+			<Title>Страница админа</Title>
+			<p>Список активных броней появится здесь скоро...</p>
 		</Container>
 	);
 };
