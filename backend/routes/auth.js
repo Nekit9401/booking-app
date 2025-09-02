@@ -1,8 +1,29 @@
 const express = require('express');
-const { register, login } = require('../controllers/users');
+const { register, login, checkAuth } = require('../controllers/users');
 const mapUser = require('../helpers/mapUser');
 
 const router = express.Router({ mergeParams: true });
+
+router.get('/me', async (req, res) => {
+	try {
+		const token = req.cookies.token;
+
+		const user = await checkAuth(token);
+
+		res.send({ error: null, user: mapUser(user) });
+	} catch (error) {
+		if (error.message === 'Токен не предоставлен' || error.message === 'Пользователь не найден') {
+			return res.status(401).send({ error: error.message });
+		}
+		if (error.name === 'JsonWebTokenError') {
+			return res.status(401).send({ error: 'Неверный токен' });
+		}
+		if (error.name === 'TokenExpiredError') {
+			return res.status(401).send({ error: 'Токен истек' });
+		}
+		res.status(500).send({ error: 'Ошибка сервера' });
+	}
+});
 
 router.post('/register', async (req, res) => {
 	try {

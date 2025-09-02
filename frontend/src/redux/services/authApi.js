@@ -1,6 +1,10 @@
 import { api } from '../constants';
 
 export const authApi = {
+	checkAuth: () => {
+		return api.get('/me');
+	},
+
 	login: (login, password) => {
 		return api.post('/login', { login, password });
 	},

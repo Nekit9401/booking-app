@@ -25,6 +25,11 @@ const appSlice = createSlice({
 			(action) => action.type.endsWith('/rejected'),
 			(state, action) => {
 				state.isLoading = false;
+
+				if (action.payload?.isAuthError) {
+					return;
+				}
+
 				state.error = action.payload?.error || 'Произошла ошибка';
 			},
 		);

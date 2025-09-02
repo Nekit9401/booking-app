@@ -2,8 +2,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import styled from 'styled-components';
-import { logoutUser } from '../../../redux/thunks/authThunks';
-import { selectCurrentUser } from '../../../redux/slices/authSlice';
+import { logoutUser } from '../../../../redux/thunks';
+import { selectCurrentUser } from '../../../../redux/slices';
+import { ROLE } from '../../../../constants';
 
 const HeaderContainer = styled.header`
 	background-color: #1976d2;
@@ -87,9 +88,9 @@ export const Header = () => {
 
 				{user ? (
 					<UserMenu>
-						{user.roleId === 1 && <StyledLink to='/admin'>Панель администратора</StyledLink>}
+						{user.roleId === ROLE.ADMIN && <StyledLink to='/admin'>Панель администратора</StyledLink>}
 						<StyledLink to='/my'>Мои номера</StyledLink>
-						<UserText>Добро пожаловать, {user.login}</UserText>
+						<UserText>Добро пожаловать, {user.login} !</UserText>
 						<LogoutButton onClick={handleLogout}>Выйти</LogoutButton>
 					</UserMenu>
 				) : (

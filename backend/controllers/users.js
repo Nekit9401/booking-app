@@ -1,6 +1,22 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/User');
-const { generate } = require('../helpers/token');
+const { generate, verify } = require('../helpers/token');
+
+const checkAuth = async (token) => {
+	if (!token) {
+		throw new Error('Токен не предоставлен');
+	}
+
+	const tokenData = verify(token);
+
+	const user = await User.findById(tokenData.id);
+
+	if (!user) {
+		throw new Error('Пользователь не найден');
+	}
+
+	return user;
+};
 
 const register = async (login, password) => {
 	const candidate = await User.findOne({ login });
@@ -42,4 +58,5 @@ const login = async (login, password) => {
 module.exports = {
 	register,
 	login,
+	checkAuth,
 };
