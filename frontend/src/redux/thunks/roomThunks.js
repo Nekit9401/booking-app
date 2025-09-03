@@ -22,7 +22,11 @@ export const fetchRoom = createAsyncThunk('rooms/fetchRoom', async (roomId, { re
 
 export const createRoom = createAsyncThunk('rooms/createRoom', async (roomData, { rejectWithValue }) => {
 	try {
-		const response = await roomsApi.createRoom(roomData);
+		const response = await roomsApi.createRoom(roomData, {
+			headers: {
+				'Content-Type': 'multipart/form-data',
+			},
+		});
 		return response.data;
 	} catch (error) {
 		return rejectWithValue(error.response?.data || { error: 'Ошибка сети' });

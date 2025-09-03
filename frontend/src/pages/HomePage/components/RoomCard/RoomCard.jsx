@@ -7,7 +7,7 @@ const RoomCardContainer = ({ className, id, photos, number, typeId, roomTypes, p
 	return (
 		<div className={className}>
 			<Link to={`room/${id}`}>
-				<img src={photos[0]} alt={number} className='room-image' />
+				<img src={`http://localhost:3002${photos[0]}`} alt={number} className='room-image' />
 				<div className='room-info'>
 					<h3>Номер {number}</h3>
 					<p className='room-type'>{type}</p>

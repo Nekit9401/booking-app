@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { Button, Input } from '../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectAppLoading } from '../../redux/slices/appSlice';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { selectCurrentUser } from '../../redux/slices';
 import { loginUser } from '../../redux/thunks';
 
@@ -41,6 +41,7 @@ const LoginPageContainer = ({ className }) => {
 	});
 
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 	const isLoading = useSelector(selectAppLoading);
 	const currentUser = useSelector(selectCurrentUser);
 
@@ -55,7 +56,7 @@ const LoginPageContainer = ({ className }) => {
 	const isFormError = errors?.login?.message || errors?.password?.message;
 
 	if (currentUser) {
-		return <Navigate to='/' />;
+		navigate('/');
 	}
 
 	return (

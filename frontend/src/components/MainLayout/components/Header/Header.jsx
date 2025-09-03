@@ -88,7 +88,12 @@ export const Header = () => {
 
 				{user ? (
 					<UserMenu>
-						{user.roleId === ROLE.ADMIN && <StyledLink to='/admin'>Панель администратора</StyledLink>}
+						{user.roleId === ROLE.ADMIN && (
+							<>
+								<StyledLink to='/admin'>Панель администратора</StyledLink>
+								<StyledLink to='/admin/create-room'>Добавить номер</StyledLink>
+							</>
+						)}
 						<StyledLink to='/my'>Мои номера</StyledLink>
 						<UserText>Добро пожаловать, {user.login} !</UserText>
 						<LogoutButton onClick={handleLogout}>Выйти</LogoutButton>

@@ -10,7 +10,7 @@ const port = 3002;
 const app = express();
 
 // app.use(express.static(path.resolve('..', 'frontend', 'dist')));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use(express.json());
 app.use(cookieParser());

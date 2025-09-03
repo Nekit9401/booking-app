@@ -13,8 +13,8 @@ export const roomsApi = {
 		return api.get('/rooms/types');
 	},
 
-	createRoom: (roomData) => {
-		return api.post('/rooms', roomData);
+	createRoom: (roomData, config) => {
+		return api.post('/rooms', roomData, config);
 	},
 
 	updateRoom: (id, roomData) => {

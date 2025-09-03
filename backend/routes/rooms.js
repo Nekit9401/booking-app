@@ -3,6 +3,7 @@ const { getRooms, getRoom, createRoom, updateRoom, deleteRoom, getRoomTypes } = 
 const mapRoom = require('../helpers/mapRoom');
 const authenticated = require('../middlewares/authenticated');
 const isAdmin = require('../middlewares/isAdmin');
+const upload = require('../middlewares/upload');
 
 const router = express.Router({ mergeParams: true });
 
@@ -36,9 +37,16 @@ router.get('/:id', async (req, res) => {
 	}
 });
 
-router.post('/', authenticated, isAdmin(), async (req, res) => {
+router.post('/', authenticated, isAdmin(), upload.array('photos', 10), async (req, res) => {
 	try {
-		const room = await createRoom(req.body);
+		const photos = req.files
+			? req.files.map((file) => {
+					return `/uploads/rooms/${file.filename}`;
+			  })
+			: [];
+
+		const room = await createRoom({ ...req.body, photos });
+
 		res.send({ data: mapRoom(room) });
 	} catch (error) {
 		if (error.message === 'Номер с таким числом уже существует') {

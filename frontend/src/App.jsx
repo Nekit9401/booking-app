@@ -8,6 +8,7 @@ import { RegisterPage } from './pages';
 import { RoomPage } from './pages';
 import { MyBookingsPage } from './pages';
 import { AdminPage } from './pages';
+import { CreateRoomPage } from './pages/RoomPage/components';
 
 export const App = () => {
 	return (
@@ -18,6 +19,7 @@ export const App = () => {
 					<Route path='login' element={<LoginPage />} />
 					<Route path='register' element={<RegisterPage />} />
 					<Route path='room/:id' element={<RoomPage />} />
+					<Route path='admin/create-room' element={<CreateRoomPage />} />
 					<Route
 						path='my'
 						element={

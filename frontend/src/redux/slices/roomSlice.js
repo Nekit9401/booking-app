@@ -26,6 +26,7 @@ const roomSlice = createSlice({
 		});
 		builder.addCase(createRoom.fulfilled, (state, action) => {
 			state.items.push(action.payload.data);
+			state.currentRoom = action.payload.data;
 		});
 		builder.addCase(updateRoom.fulfilled, (state, action) => {
 			const index = state.items.findIndex((item) => item.id === action.payload.data.id);
