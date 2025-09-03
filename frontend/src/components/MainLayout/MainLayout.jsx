@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectAppLoading } from '../../redux/slices';
 import { useEffect } from 'react';
 import { checkAuthUser } from '../../redux/thunks';
+import { Loader } from '../Loader/Loader';
 
 const Container = styled.main`
 	max-width: 1200px;
@@ -20,15 +21,12 @@ export const MainLayout = () => {
 		dispatch(checkAuthUser());
 	}, [dispatch]);
 
-	if (isLoading) {
-		return <div>Загрузка...</div>;
-	}
-
 	return (
 		<>
 			<Header />
 			<Container>
 				<Outlet />
+				{isLoading && <Loader />}
 			</Container>
 		</>
 	);

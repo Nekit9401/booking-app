@@ -1,10 +1,16 @@
 const express = require('express');
-const { getRooms, getRoom, createRoom, updateRoom, deleteRoom } = require('../controllers/rooms');
+const { getRooms, getRoom, createRoom, updateRoom, deleteRoom, getRoomTypes } = require('../controllers/rooms');
 const mapRoom = require('../helpers/mapRoom');
 const authenticated = require('../middlewares/authenticated');
 const isAdmin = require('../middlewares/isAdmin');
 
 const router = express.Router({ mergeParams: true });
+
+router.get('/types', (req, res) => {
+	const roomTypes = getRoomTypes();
+
+	res.send({ data: roomTypes });
+});
 
 router.get('/', async (req, res) => {
 	try {

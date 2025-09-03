@@ -19,24 +19,24 @@ const bookingSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder.addCase(fetchUserBookings.fulfilled, (state, action) => {
-			state.items = action.payload;
+			state.items = action.payload.data;
 		});
 		builder.addCase(fetchAllBookings.fulfilled, (state, action) => {
-			state.items = action.payload;
+			state.items = action.payload.data;
 		});
 		builder.addCase(createBooking.fulfilled, (state, action) => {
-			state.items.push(action.payload);
+			state.items.push(action.payload.data);
 		});
 		builder.addCase(updateBooking.fulfilled, (state, action) => {
-			const index = state.items.findIndex((item) => item.id === action.payload.id);
+			const index = state.items.findIndex((item) => item.id === action.payload.data.id);
 			if (index != -1) {
-				state.items[index] = action.payload;
+				state.items[index] = action.payload.data;
 			}
 		});
 		builder.addCase(cancelBooking.fulfilled, (state, action) => {
 			const index = state.items.findIndex((item) => item.id === action.payload.id);
 			if (index != -1) {
-				state.items[index] = action.payload;
+				state.items[index] = action.payload.data;
 			}
 		});
 	},

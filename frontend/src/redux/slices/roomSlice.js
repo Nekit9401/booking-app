@@ -19,26 +19,26 @@ const roomSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder.addCase(fetchRooms.fulfilled, (state, action) => {
-			state.items = action.payload;
+			state.items = action.payload.data;
 		});
 		builder.addCase(fetchRoom.fulfilled, (state, action) => {
-			state.currentRoom = action.payload;
+			state.currentRoom = action.payload.data;
 		});
 		builder.addCase(createRoom.fulfilled, (state, action) => {
-			state.items.push(action.payload);
+			state.items.push(action.payload.data);
 		});
 		builder.addCase(updateRoom.fulfilled, (state, action) => {
-			const index = state.items.findIndex((item) => item.id === action.payload.id);
+			const index = state.items.findIndex((item) => item.id === action.payload.data.id);
 			if (index !== -1) {
-				state.items[index] = action.payload;
+				state.items[index] = action.payload.data;
 			}
-			if (state.currentRoom && state.currentRoom.id === action.payload.id) {
-				state.currentRoom = action.payload;
+			if (state.currentRoom && state.currentRoom.id === action.payload.data.id) {
+				state.currentRoom = action.payload.data;
 			}
 		});
 		builder.addCase(deleteRoom.fulfilled, (state, action) => {
-			state.items = state.items.filter((item) => item.id !== action.payload.id);
-			if (state.currentRoom && state.currentRoom.id === action.payload.id) {
+			state.items = state.items.filter((item) => item.id !== action.payload.data.id);
+			if (state.currentRoom && state.currentRoom.id === action.payload.data.id) {
 				state.currentRoom = null;
 			}
 		});

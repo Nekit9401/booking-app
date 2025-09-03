@@ -9,6 +9,9 @@ const appSlice = createSlice({
 	name: 'app',
 	initialState,
 	reducers: {
+		setError: (state, action) => {
+			state.error = action.payload;
+		},
 		clearError: (state) => {
 			state.error = null;
 		},
@@ -43,7 +46,7 @@ const appSlice = createSlice({
 	},
 });
 
-export const { clearError } = appSlice.actions;
+export const { setError, clearError } = appSlice.actions;
 
 export const selectAppLoading = (state) => state.app.isLoading;
 export const selectAppError = (state) => state.app.error;

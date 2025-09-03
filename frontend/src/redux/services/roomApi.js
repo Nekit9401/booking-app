@@ -9,6 +9,10 @@ export const roomsApi = {
 		return api.get(`/rooms/${id}`);
 	},
 
+	getRoomTypes: () => {
+		return api.get('/rooms/types');
+	},
+
 	createRoom: (roomData) => {
 		return api.post('/rooms', roomData);
 	},

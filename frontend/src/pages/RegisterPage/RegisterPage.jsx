@@ -119,7 +119,7 @@ export const RegisterPage = styled(RegisterPageContainer)`
 	& > h1 {
 		text-align: center;
 		margin-bottom: 30px;
-		color: #1976d2;
+		color: #1976d2ff;
 	}
 
 	& > form {

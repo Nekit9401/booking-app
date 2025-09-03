@@ -4,3 +4,4 @@ export * from './MainLayout/MainLayout';
 export * from './ProtectedRoute/ProtectedRoute';
 export * from './Button/Button';
 export * from './ErrorNotifications/ErrorNotifications';
+export * from './Loader/Loader';

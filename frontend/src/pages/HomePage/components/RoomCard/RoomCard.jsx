@@ -1,0 +1,57 @@
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+
+const RoomCardContainer = ({ className, id, photos, number, typeId, roomTypes, price, guests }) => {
+	const type = roomTypes.find(({ id }) => id === typeId)?.name || 'Тип не найден';
+
+	return (
+		<div className={className}>
+			<Link to={`room/${id}`}>
+				<img src={photos[0]} alt={number} className='room-image' />
+				<div className='room-info'>
+					<h3>Номер {number}</h3>
+					<p className='room-type'>{type}</p>
+					<div className='room-details'>
+						<span>Цена: {price} ₽/сутки</span>
+						<span>Гостей: до {guests}</span>
+					</div>
+				</div>
+			</Link>
+		</div>
+	);
+};
+
+export const RoomCard = styled(RoomCardContainer)`
+	background: white;
+	border-radius: 8px;
+	overflow: hidden;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	transition: transform 0.3s ease;
+
+	&:hover {
+		transform: translateY(-5px);
+	}
+
+	.room-image {
+		width: 100%;
+		height: 200px;
+		object-fit: cover;
+	}
+
+	.room-info {
+		padding: 20px;
+	}
+
+	.room-type {
+		color: #666;
+		font-style: italic;
+		margin-bottom: 10px;
+	}
+
+	.room-details {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 15px;
+		font-weight: 500;
+	}
+`;

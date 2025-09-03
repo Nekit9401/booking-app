@@ -1,3 +1,4 @@
+const { ROOM_TYPES } = require('../constants/room-types');
 const Room = require('../models/Room');
 
 const getRooms = async () => {
@@ -6,6 +7,14 @@ const getRooms = async () => {
 
 const getRoom = async (id) => {
 	return Room.findById(id);
+};
+
+const getRoomTypes = () => {
+	return [
+		{ id: ROOM_TYPES.ECONOM, name: 'Эконом' },
+		{ id: ROOM_TYPES.STANDART, name: 'Стандарт' },
+		{ id: ROOM_TYPES.LUX, name: 'Люкс' },
+	];
 };
 
 const createRoom = async (data) => {
@@ -38,4 +47,5 @@ module.exports = {
 	createRoom,
 	updateRoom,
 	deleteRoom,
+	getRoomTypes,
 };

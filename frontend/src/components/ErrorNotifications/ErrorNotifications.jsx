@@ -79,8 +79,6 @@ export const ErrorNotification = () => {
 
 			const timer = setTimeout(() => {
 				setExiting(true);
-
-				// Даем время для анимации исчезновения перед очисткой ошибки
 				setTimeout(() => {
 					setVisible(false);
 					dispatch(clearError());
