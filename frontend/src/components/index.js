@@ -5,3 +5,4 @@ export * from './ProtectedRoute/ProtectedRoute';
 export * from './Button/Button';
 export * from './ErrorNotifications/ErrorNotifications';
 export * from './Loader/Loader';
+export * from './Modal/Modal';

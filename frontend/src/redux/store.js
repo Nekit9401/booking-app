@@ -5,7 +5,7 @@ export const store = configureStore({
 	reducer: {
 		app: appReduсer,
 		auth: authReduсer,
-		booking: bookingReducer,
+		bookings: bookingReducer,
 		room: roomReducer,
 	},
 });

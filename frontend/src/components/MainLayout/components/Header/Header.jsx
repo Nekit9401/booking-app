@@ -94,7 +94,7 @@ export const Header = () => {
 								<StyledLink to='/admin/create-room'>Добавить номер</StyledLink>
 							</>
 						)}
-						<StyledLink to='/my'>Мои номера</StyledLink>
+						<StyledLink to='/bookings'>Мои бронирования</StyledLink>
 						<UserText>Добро пожаловать, {user.login} !</UserText>
 						<LogoutButton onClick={handleLogout}>Выйти</LogoutButton>
 					</UserMenu>

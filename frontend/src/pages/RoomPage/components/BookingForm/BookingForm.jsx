@@ -9,6 +9,7 @@ import { createBooking } from '../../../../redux/thunks';
 import { formateDate } from '../../../../utils';
 import { registerLocale } from 'react-datepicker';
 import ru from 'date-fns/locale/ru';
+import { useNavigate } from 'react-router-dom';
 
 registerLocale('ru', ru);
 
@@ -18,6 +19,7 @@ const BookingFormContainer = ({ className, room }) => {
 	const [error, setError] = useState(null);
 	const dispatch = useDispatch();
 	const isLoading = useSelector(selectAppLoading);
+	const navigate = useNavigate();
 
 	const handleCheckInChange = (date) => {
 		if (error) {
@@ -66,13 +68,15 @@ const BookingFormContainer = ({ className, room }) => {
 
 		setError('');
 
-		dispatch(
+		await dispatch(
 			createBooking({
 				room: room.id,
 				checkIn: checkInDate.toISOString(),
 				checkOut: checkOutDate.toISOString(),
 			}),
 		);
+
+		navigate('/bookings');
 	};
 
 	const isDateDisabled = (date) => {

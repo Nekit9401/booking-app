@@ -25,8 +25,8 @@ export const MainLayout = () => {
 		<>
 			<Header />
 			<Container>
-				<Outlet />
 				{isLoading && <Loader />}
+				<Outlet />
 			</Container>
 		</>
 	);

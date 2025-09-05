@@ -1,12 +1,11 @@
 import { Routes, Route } from 'react-router-dom';
-import { HomePage } from './pages';
+import { BookingsPage, HomePage } from './pages';
 import { ErrorNotification, MainLayout } from './components';
 import { ProtectedRoute } from './components';
 import { AdminRoute } from './components';
 import { LoginPage } from './pages';
 import { RegisterPage } from './pages';
 import { RoomPage } from './pages';
-import { MyBookingsPage } from './pages';
 import { AdminPage } from './pages';
 import { CreateRoomPage } from './pages/RoomPage/components';
 
@@ -21,10 +20,10 @@ export const App = () => {
 					<Route path='room/:id' element={<RoomPage />} />
 					<Route path='admin/create-room' element={<CreateRoomPage />} />
 					<Route
-						path='my'
+						path='bookings'
 						element={
 							<ProtectedRoute>
-								<MyBookingsPage />
+								<BookingsPage />
 							</ProtectedRoute>
 						}
 					/>
