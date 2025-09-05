@@ -19,7 +19,14 @@ const checkRoomAvailability = async (roomId, checkIn, checkOut, excludeBookingId
 const createBooking = async (bookingData) => {
 	const { room, checkIn, checkOut } = bookingData;
 
-	const isAvailable = await checkRoomAvailability(room, checkIn, checkOut);
+	const checkInDate = new Date(checkIn);
+	const checkOutDate = new Date(checkOut);
+
+	if (checkInDate >= checkOutDate) {
+		throw new Error('Дата выезда не может раньше даты заезда');
+	}
+
+	const isAvailable = await checkRoomAvailability(room, checkInDate, checkOutDate);
 	if (!isAvailable) {
 		throw new Error('Номер недоступен на выбранные даты');
 	}

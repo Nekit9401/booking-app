@@ -10,7 +10,7 @@ const ButtonContainer = ({ children, className, ...props }) => {
 
 export const Button = styled(ButtonContainer)`
 	padding: 12px;
-	background-color: #1976d2;
+	background-color: ${({ variant }) => (variant === 'danger' ? '#d32f2f' : '#1976d2')};
 	color: white;
 	border: none;
 	border-radius: 4px;
@@ -20,7 +20,7 @@ export const Button = styled(ButtonContainer)`
 	transition: background-color 0.3s;
 
 	&:hover {
-		background-color: #1565c0;
+		background-color: ${({ variant }) => (variant === 'danger' ? '#b71c1c' : '#1565c0')};
 	}
 
 	&:disabled {

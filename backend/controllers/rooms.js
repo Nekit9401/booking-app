@@ -1,20 +1,33 @@
-const { ROOM_TYPES } = require('../constants/room-types');
+const Booking = require('../models/Booking');
 const Room = require('../models/Room');
 
 const getRooms = async () => {
 	return Room.find();
 };
 
-const getRoom = async (id) => {
-	return Room.findById(id);
+const getRoomBookings = async (roomId) => {
+	const bookings = await Booking.find({
+		room: roomId,
+		status: 'active',
+	}).select('checkIn checkOut');
+
+	return bookings;
 };
 
-const getRoomTypes = () => {
-	return [
-		{ id: ROOM_TYPES.ECONOM, name: 'Эконом' },
-		{ id: ROOM_TYPES.STANDART, name: 'Стандарт' },
-		{ id: ROOM_TYPES.LUX, name: 'Люкс' },
-	];
+const getRoom = async (id) => {
+	const room = await Room.findById(id);
+
+	if (!room) {
+		throw new Error('Номер не найден');
+	}
+
+	const bookings = await getRoomBookings(id);
+	console.log(room.toObject());
+
+	return {
+		...room.toObject(),
+		bookings,
+	};
 };
 
 const createRoom = async (data) => {
@@ -47,5 +60,4 @@ module.exports = {
 	createRoom,
 	updateRoom,
 	deleteRoom,
-	getRoomTypes,
 };

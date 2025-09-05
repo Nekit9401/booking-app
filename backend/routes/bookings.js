@@ -39,7 +39,10 @@ router.post('/', authenticated, async (req, res) => {
 		});
 		res.send({ data: mapBooking(booking) });
 	} catch (error) {
-		if (error.message === 'Номер недоступен на выбранные даты') {
+		if (
+			error.message === 'Дата выезда не может раньше даты заезда' ||
+			error.message === 'Номер недоступен на выбранные даты'
+		) {
 			res.status(409).send({ error: error.message });
 		} else {
 			res.status(500).send({ error: error.message || 'Ошибка при создании бронирования' });

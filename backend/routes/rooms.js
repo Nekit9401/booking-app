@@ -7,12 +7,6 @@ const upload = require('../middlewares/upload');
 
 const router = express.Router({ mergeParams: true });
 
-router.get('/types', (req, res) => {
-	const roomTypes = getRoomTypes();
-
-	res.send({ data: roomTypes });
-});
-
 router.get('/', async (req, res) => {
 	try {
 		const rooms = await getRooms();
@@ -27,13 +21,13 @@ router.get('/:id', async (req, res) => {
 	try {
 		const room = await getRoom(req.params.id);
 
-		if (!room) {
-			return res.status(404).send({ error: 'Номер не найден' });
-		}
-
 		res.send({ data: mapRoom(room) });
 	} catch (error) {
-		res.status(500).send({ error: error.message || 'Ошибка при получении номера' });
+		if (error.message === 'Номер не найден') {
+			res.status(404).send({ error: error.message });
+		} else {
+			res.status(500).send({ error: error.message || 'Ошибка при получении номера' });
+		}
 	}
 });
 

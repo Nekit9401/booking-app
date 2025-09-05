@@ -1,34 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import styled from 'styled-components';
-import { roomsApi } from '../../redux/services';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchRooms } from '../../redux/thunks';
-import { selectRooms, setError } from '../../redux/slices';
+import { selectRooms } from '../../redux/slices';
 import { RoomCard } from './components';
 
 const HomePageContainer = ({ className }) => {
-	const [roomTypes, setRoomTypes] = useState([]);
 	const rooms = useSelector(selectRooms);
 	const dispatch = useDispatch();
 
 	useEffect(() => {
-		const fetchRoomsData = async () => {
-			try {
-				const roomTypesResponse = await roomsApi.getRoomTypes();
-
-				if (!roomTypesResponse.data.data) {
-					throw new Error('Ошибка в получении типов комнат');
-				}
-
-				setRoomTypes(roomTypesResponse.data.data);
-
-				dispatch(fetchRooms());
-			} catch (error) {
-				setError(error.message);
-			}
-		};
-
-		fetchRoomsData();
+		dispatch(fetchRooms());
 	}, [dispatch]);
 
 	return (
@@ -42,7 +24,6 @@ const HomePageContainer = ({ className }) => {
 						photos={photos}
 						number={number}
 						typeId={type}
-						roomTypes={roomTypes}
 						price={price}
 						guests={guests}
 					/>

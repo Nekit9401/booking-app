@@ -1,15 +1,14 @@
 import * as yup from 'yup';
 import styled from 'styled-components';
 import { ROOM_TYPES } from '../../../../constants';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { createRoom } from '../../../../redux/thunks';
-import { clearCurrentRoom, selectAppLoading, selectCurrentRoom, setError } from '../../../../redux/slices';
+import { clearCurrentRoom, selectAppLoading, selectCurrentRoom } from '../../../../redux/slices';
 import { Button, Input } from '../../../../components';
-import { roomsApi } from '../../../../redux/services';
 
 const CreateRoomSchema = yup.object({
 	number: yup
@@ -22,7 +21,7 @@ const CreateRoomSchema = yup.object({
 		.number()
 		.typeError('Тип должен быть числом')
 		.required('Выберите тип комнаты')
-		.oneOf([ROOM_TYPES.ECONOM, ROOM_TYPES.STANDART, ROOM_TYPES.LUX], 'Неверный тип комнаты'),
+		.oneOf([ROOM_TYPES.ECONOM.id, ROOM_TYPES.STANDART.id, ROOM_TYPES.LUX.id], 'Неверный тип комнаты'),
 	description: yup
 		.string()
 		.required('Введите описание комнаты')
@@ -43,7 +42,6 @@ const CreateRoomSchema = yup.object({
 const CreateRoomPageContainer = ({ className }) => {
 	const [selectedFiles, setSelectedFiles] = useState([]);
 	const [previewUrls, setPreviewUrls] = useState([]);
-	const [roomTypes, setRoomTypes] = useState([]);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
 	const currentRoom = useSelector(selectCurrentRoom);
@@ -65,24 +63,6 @@ const CreateRoomPageContainer = ({ className }) => {
 		resolver: yupResolver(CreateRoomSchema),
 		mode: 'onSubmit',
 	});
-
-	useEffect(() => {
-		const fetchRoomsTypes = async () => {
-			try {
-				const roomTypesResponse = await roomsApi.getRoomTypes();
-
-				if (!roomTypesResponse.data.data) {
-					throw new Error('Ошибка в получении типов комнат');
-				}
-
-				setRoomTypes(roomTypesResponse.data.data);
-			} catch (error) {
-				setError(error.message);
-			}
-		};
-
-		fetchRoomsTypes();
-	}, []);
 
 	const handleFileChange = (e) => {
 		const files = Array.from(e.target.files);
@@ -119,9 +99,9 @@ const CreateRoomPageContainer = ({ className }) => {
 		dispatch(clearCurrentRoom());
 		await dispatch(createRoom(formData));
 
-		// if (currentRoom) {
-		// 	navigate('/');
-		// }
+		if (currentRoom) {
+			navigate('/');
+		}
 	};
 
 	const handleInputChange = (fieldName) => () => {
@@ -130,7 +110,7 @@ const CreateRoomPageContainer = ({ className }) => {
 
 	return (
 		<div className={className}>
-			<h1>Добавить новый нормер</h1>
+			<h1>Добавить новый номер</h1>
 			<form onSubmit={handleSubmit(onSubmit)} encType='multipart/form-data'>
 				<div className='form-group'>
 					<Input
@@ -146,7 +126,7 @@ const CreateRoomPageContainer = ({ className }) => {
 					<label>Тип комнаты:</label>
 					<select {...register('type')} onChange={handleInputChange('type')}>
 						<option value=''>Выберите тип</option>
-						{roomTypes.map(({ id: roomId, name: typeName }) => (
+						{Object.entries(ROOM_TYPES).map(([, { id: roomId, name: typeName }]) => (
 							<option key={roomId} value={roomId}>
 								{typeName}
 							</option>

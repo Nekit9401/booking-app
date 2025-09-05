@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { getTypeRoomName } from '../../../../utils';
 
-const RoomCardContainer = ({ className, id, photos, number, typeId, roomTypes, price, guests }) => {
-	const type = roomTypes.find(({ id }) => id === typeId)?.name || 'Тип не найден';
+const RoomCardContainer = ({ className, id, photos, number, typeId, price, guests }) => {
+	const type = getTypeRoomName(typeId);
 
 	return (
 		<div className={className}>
