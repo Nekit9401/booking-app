@@ -18,21 +18,28 @@ export const App = () => {
 					<Route path='login' element={<LoginPage />} />
 					<Route path='register' element={<RegisterPage />} />
 					<Route path='room/:id' element={<RoomPage />} />
-					<Route path='admin/create-room' element={<CreateRoomPage />} />
-					<Route
-						path='bookings'
-						element={
-							<ProtectedRoute>
-								<BookingsPage />
-							</ProtectedRoute>
-						}
-					/>
 					<Route
 						path='admin'
 						element={
 							<AdminRoute>
 								<AdminPage />
 							</AdminRoute>
+						}
+					/>
+					<Route
+						path='admin/create-room'
+						element={
+							<AdminRoute>
+								<CreateRoomPage />
+							</AdminRoute>
+						}
+					/>
+					<Route
+						path='bookings'
+						element={
+							<ProtectedRoute>
+								<BookingsPage />
+							</ProtectedRoute>
 						}
 					/>
 				</Route>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { clearError, selectAppError } from '../../redux/slices/appSlice';
+import { clearAuthError, clearError, selectAppAuthError, selectAppError } from '../../redux/slices/appSlice';
 import styled, { keyframes } from 'styled-components';
 
 const slideIn = keyframes`
@@ -69,11 +69,12 @@ const CloseButton = styled.button`
 export const ErrorNotification = () => {
 	const dispatch = useDispatch();
 	const error = useSelector(selectAppError);
+	const authError = useSelector(selectAppAuthError);
 	const [visible, setVisible] = useState(false);
 	const [exiting, setExiting] = useState(false);
 
 	useEffect(() => {
-		if (error) {
+		if (error || authError) {
 			setVisible(true);
 			setExiting(false);
 
@@ -82,6 +83,7 @@ export const ErrorNotification = () => {
 				setTimeout(() => {
 					setVisible(false);
 					dispatch(clearError());
+					dispatch(clearAuthError());
 				}, 300);
 			}, 5000);
 
@@ -89,7 +91,7 @@ export const ErrorNotification = () => {
 		} else {
 			setVisible(false);
 		}
-	}, [error, dispatch]);
+	}, [error, dispatch, authError]);
 
 	const handleClose = () => {
 		setExiting(true);
@@ -105,7 +107,7 @@ export const ErrorNotification = () => {
 	return (
 		<NotificationContainer>
 			<Notification className={exiting ? 'exiting' : ''}>
-				<div>{error}</div>
+				<div>{error || authError}</div>
 				<CloseButton onClick={handleClose}>&times;</CloseButton>
 			</Notification>
 		</NotificationContainer>

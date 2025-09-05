@@ -1,17 +1,20 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { selectCurrentUser, setError } from '../../redux/slices';
+import { selectCurrentUser, setAuthError } from '../../redux/slices';
 import { useNavigate } from 'react-router-dom';
 import { ROLE } from '../../constants';
+import { useEffect } from 'react';
 
 export const AdminRoute = ({ children }) => {
 	const user = useSelector(selectCurrentUser);
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
-	if (user.roleId !== ROLE.ADMIN) {
-		navigate('/', { replace: true });
-		dispatch(setError('Недостаточно прав доступа'));
-	}
+	useEffect(() => {
+		if (!user || user?.roleId !== ROLE.ADMIN) {
+			navigate('/', { replace: true });
+			dispatch(setAuthError('Ошибка доступа'));
+		}
+	}, [user, navigate, dispatch]);
 
-	return children;
+	return user ? children : null;
 };

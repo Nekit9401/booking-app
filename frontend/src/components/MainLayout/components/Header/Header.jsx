@@ -91,7 +91,6 @@ export const Header = () => {
 						{user.roleId === ROLE.ADMIN && (
 							<>
 								<StyledLink to='/admin'>Панель администратора</StyledLink>
-								<StyledLink to='/admin/create-room'>Добавить номер</StyledLink>
 							</>
 						)}
 						<StyledLink to='/bookings'>Мои бронирования</StyledLink>

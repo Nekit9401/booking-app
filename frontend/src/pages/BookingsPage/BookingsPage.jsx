@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { clearCurrentBooking, selectBookings, selectCurrentBooking, selectCurrentUser } from '../../redux/slices';
 import { cancelBooking, fetchUserBookings } from '../../redux/thunks';
-import { Button, Modal } from '../../components';
+import { Button, FilterPanel, Modal } from '../../components';
 import { BookingCard } from './components';
 import { Link } from 'react-router-dom';
 
@@ -43,17 +43,7 @@ const BookingsPageContainer = ({ className }) => {
 
 			<div className='page-header'>
 				<h1>Мои бронирования</h1>
-				<div className='filters'>
-					<button className={filter === 'all' ? 'active' : ''} onClick={() => setFilter('all')}>
-						Все
-					</button>
-					<button className={filter === 'active' ? 'active' : ''} onClick={() => setFilter('active')}>
-						Активные
-					</button>
-					<button className={filter === 'cancelled' ? 'active' : ''} onClick={() => setFilter('cancelled')}>
-						Отмененные
-					</button>
-				</div>
+				<FilterPanel filter={filter} setFilter={setFilter} />
 			</div>
 
 			{bookings.length === 0 ? (
@@ -98,31 +88,6 @@ export const BookingsPage = styled(BookingsPageContainer)`
 		h1 {
 			color: #1976d2;
 			margin: 0;
-		}
-	}
-
-	.filters {
-		display: flex;
-		gap: 10px;
-		flex-wrap: wrap;
-
-		button {
-			padding: 8px 16px;
-			border: 1px solid #ddd;
-			background: white;
-			border-radius: 4px;
-			cursor: pointer;
-			transition: all 0.3s;
-
-			&:hover {
-				background-color: #f5f5f5;
-			}
-
-			&.active {
-				background-color: #1976d2;
-				color: white;
-				border-color: #1976d2;
-			}
 		}
 	}
 

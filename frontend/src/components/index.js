@@ -6,3 +6,4 @@ export * from './Button/Button';
 export * from './ErrorNotifications/ErrorNotifications';
 export * from './Loader/Loader';
 export * from './Modal/Modal';
+export * from './FilterPanel/FilterPanel';

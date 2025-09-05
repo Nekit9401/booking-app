@@ -5,9 +5,10 @@ import styled from 'styled-components';
 import { Button, Input } from '../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectAppLoading } from '../../redux/slices/appSlice';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { registerUser } from '../../redux/thunks';
 import { selectCurrentUser } from '../../redux/slices';
+import { useEffect } from 'react';
 
 const RegSchema = yup.object({
 	login: yup
@@ -49,6 +50,13 @@ const RegisterPageContainer = ({ className }) => {
 	const dispatch = useDispatch();
 	const isLoading = useSelector(selectAppLoading);
 	const currentUser = useSelector(selectCurrentUser);
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		if (currentUser) {
+			navigate('/', { replace: true });
+		}
+	}, [currentUser, navigate]);
 
 	const onSubmit = async ({ login, password }) => {
 		await dispatch(registerUser({ login, password }));
@@ -59,10 +67,6 @@ const RegisterPageContainer = ({ className }) => {
 	};
 
 	const isFormError = errors?.login?.message || errors?.password?.message || errors?.passcheck?.message;
-
-	if (currentUser) {
-		return <Navigate to='/' />;
-	}
 
 	return (
 		<div className={className}>

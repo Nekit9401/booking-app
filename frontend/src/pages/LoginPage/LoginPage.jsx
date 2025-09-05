@@ -8,6 +8,7 @@ import { selectAppLoading } from '../../redux/slices/appSlice';
 import { Link, useNavigate } from 'react-router-dom';
 import { selectCurrentUser } from '../../redux/slices';
 import { loginUser } from '../../redux/thunks';
+import { useEffect } from 'react';
 
 const LoginSchema = yup.object({
 	login: yup
@@ -45,6 +46,12 @@ const LoginPageContainer = ({ className }) => {
 	const isLoading = useSelector(selectAppLoading);
 	const currentUser = useSelector(selectCurrentUser);
 
+	useEffect(() => {
+		if (currentUser) {
+			navigate('/', { replace: true });
+		}
+	}, [currentUser, navigate]);
+
 	const onSubmit = async ({ login, password }) => {
 		await dispatch(loginUser({ login, password }));
 	};
@@ -54,10 +61,6 @@ const LoginPageContainer = ({ className }) => {
 	};
 
 	const isFormError = errors?.login?.message || errors?.password?.message;
-
-	if (currentUser) {
-		navigate('/');
-	}
 
 	return (
 		<div className={className}>

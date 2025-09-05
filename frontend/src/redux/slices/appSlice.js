@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
 	isLoading: false,
 	error: null,
+	authError: null,
 	isModalOpen: false,
 };
 
@@ -15,6 +16,12 @@ const appSlice = createSlice({
 		},
 		clearError: (state) => {
 			state.error = null;
+		},
+		setAuthError: (state, action) => {
+			state.authError = action.payload;
+		},
+		clearAuthError: (state) => {
+			state.authError = null;
 		},
 		openModal: (state) => {
 			state.isModalOpen = true;
@@ -53,10 +60,11 @@ const appSlice = createSlice({
 	},
 });
 
-export const { setError, clearError, openModal, closeModal } = appSlice.actions;
+export const { setError, clearError, setAuthError, openModal, closeModal, clearAuthError } = appSlice.actions;
 
 export const selectAppLoading = (state) => state.app.isLoading;
 export const selectAppError = (state) => state.app.error;
+export const selectAppAuthError = (state) => state.app.authError;
 export const selectisModalOpen = (state) => state.app.isModalOpen;
 
 export const { reducer: appReduсer } = appSlice;

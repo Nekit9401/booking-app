@@ -1,16 +1,19 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { selectCurrentUser, setError } from '../../redux/slices';
+import { selectCurrentUser, setAuthError } from '../../redux/slices';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 export const ProtectedRoute = ({ children }) => {
 	const user = useSelector(selectCurrentUser);
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 
-	if (!user) {
-		navigate('/login', { replace: true });
-		dispatch(setError('Недоступно для неавторизованных пользователей'));
-	}
+	useEffect(() => {
+		if (!user) {
+			navigate('/login', { replace: true });
+			dispatch(setAuthError('Недоступно для неавторизованных пользователей'));
+		}
+	}, [user, navigate, dispatch]);
 
-	return children;
+	return user ? children : null;
 };
