@@ -1,13 +1,9 @@
 import { Routes, Route } from 'react-router-dom';
-import { BookingsPage, HomePage } from './pages';
+import { BookingsPage, HomePage, LoginPage, RegisterPage, RoomPage, AdminPage } from './pages';
 import { ErrorNotification, MainLayout } from './components';
 import { ProtectedRoute } from './components';
 import { AdminRoute } from './components';
-import { LoginPage } from './pages';
-import { RegisterPage } from './pages';
-import { RoomPage } from './pages';
-import { AdminPage } from './pages';
-import { CreateRoomPage } from './pages/RoomPage/components';
+import { RoomForm } from './pages/RoomPage/components';
 
 export const App = () => {
 	return (
@@ -19,6 +15,22 @@ export const App = () => {
 					<Route path='register' element={<RegisterPage />} />
 					<Route path='room/:id' element={<RoomPage />} />
 					<Route
+						path='room/:id/edit'
+						element={
+							<AdminRoute>
+								<RoomForm />
+							</AdminRoute>
+						}
+					/>
+					<Route
+						path='room/create'
+						element={
+							<AdminRoute>
+								<RoomForm />
+							</AdminRoute>
+						}
+					/>
+					<Route
 						path='admin'
 						element={
 							<AdminRoute>
@@ -26,14 +38,7 @@ export const App = () => {
 							</AdminRoute>
 						}
 					/>
-					<Route
-						path='admin/create-room'
-						element={
-							<AdminRoute>
-								<CreateRoomPage />
-							</AdminRoute>
-						}
-					/>
+
 					<Route
 						path='bookings'
 						element={

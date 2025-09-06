@@ -45,7 +45,7 @@ const AdminPageContainer = ({ className }) => {
 			<div className='page-header'>
 				<h1>Панель администратора</h1>
 				<div className='admin-actions'>
-					<Link to='/admin/create-room'>
+					<Link to='/room/create'>
 						<Button>Добавить новый номер</Button>
 					</Link>
 				</div>

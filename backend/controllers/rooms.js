@@ -33,7 +33,7 @@ const getRoom = async (id) => {
 const createRoom = async (data) => {
 	const existingRoom = await Room.findOne({ number: data.number });
 	if (existingRoom) {
-		throw new Error('Номер с таким числом уже существует');
+		throw new Error('Номер комнаты уже занят!');
 	}
 
 	return Room.create(data);
@@ -41,16 +41,18 @@ const createRoom = async (data) => {
 
 const updateRoom = async (id, data) => {
 	if (data.number) {
-		const existingRoom = await Room.findOne({ number: data.number });
+		const existingRoom = await Room.findOne({ number: data.number, _id: { $ne: id } });
 		if (existingRoom) {
-			throw new Error('Номер с таким числом уже существует');
+			throw new Error('Номер комнаты уже занят!');
 		}
 	}
 
 	return Room.findByIdAndUpdate(id, data, { returnDocument: 'after' });
 };
 
-const deleteRoom = (id) => {
+const deleteRoom = async (id) => {
+	await Booking.deleteMany({ room: id });
+
 	return Room.deleteOne({ _id: id });
 };
 

@@ -45,6 +45,7 @@ export const updateRoom = createAsyncThunk('rooms/updateRoom', async ({ roomId, 
 export const deleteRoom = createAsyncThunk('rooms/deleteRoom', async (roomId, { rejectWithValue }) => {
 	try {
 		await roomsApi.deleteRoom(roomId);
+		return { id: roomId };
 	} catch (error) {
 		return rejectWithValue(error.response?.data || { error: 'Ошибка сети' });
 	}

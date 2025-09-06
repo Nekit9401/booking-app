@@ -1,2 +1,2 @@
-export * from './CreateRoomPage/CreateRoomPage';
 export * from './BookingForm/BookingForm';
+export * from './RoomForm/RoomForm';

@@ -1,26 +1,26 @@
 import * as yup from 'yup';
 import styled from 'styled-components';
 import { ROOM_TYPES } from '../../../../constants';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useMatch, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { createRoom } from '../../../../redux/thunks';
-import { clearCurrentRoom, selectAppLoading, selectCurrentRoom } from '../../../../redux/slices';
+import { createRoom, updateRoom } from '../../../../redux/thunks';
+import { selectAppLoading, selectCurrentRoom } from '../../../../redux/slices';
 import { Button, Input } from '../../../../components';
 
 const CreateRoomSchema = yup.object({
 	number: yup
 		.number()
-		.typeError('Номер должен быть числом')
 		.required('Введите номер комнаты')
+		.typeError('Номер должен быть числом')
 		.positive('Номер должен быть положительным')
 		.integer('Номер должен быть целым числом'),
 	type: yup
 		.number()
-		.typeError('Тип должен быть числом')
 		.required('Выберите тип комнаты')
+		.typeError('Тип должен быть числом')
 		.oneOf([ROOM_TYPES.ECONOM.id, ROOM_TYPES.STANDART.id, ROOM_TYPES.LUX.id], 'Неверный тип комнаты'),
 	description: yup
 		.string()
@@ -28,30 +28,32 @@ const CreateRoomSchema = yup.object({
 		.min(10, 'Описание должно содержать минимум 10 символов'),
 	price: yup
 		.number()
-		.typeError('Цена должна быть числом')
 		.required('Введите цену')
+		.typeError('Цена должна быть числом')
 		.positive('Цена должна быть положительной'),
 	guests: yup
 		.number()
-		.typeError('Количество гостей должно быть числом')
 		.required('Введите количество гостей')
+		.typeError('Количество гостей должно быть числом')
 		.positive('Количество гостей должно быть положительным')
 		.integer('Количество гостей должно быть целым числом'),
 });
 
-const CreateRoomPageContainer = ({ className }) => {
+const RoomFormContainer = ({ className }) => {
 	const [selectedFiles, setSelectedFiles] = useState([]);
 	const [previewUrls, setPreviewUrls] = useState([]);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const currentRoom = useSelector(selectCurrentRoom);
+	const room = useSelector(selectCurrentRoom);
 	const isLoading = useSelector(selectAppLoading);
+	const isEditing = useMatch('/room/:id/edit');
 
 	const {
 		register,
 		handleSubmit,
 		formState: { errors },
 		clearErrors,
+		reset,
 	} = useForm({
 		defaultValues: {
 			number: '',
@@ -63,6 +65,18 @@ const CreateRoomPageContainer = ({ className }) => {
 		resolver: yupResolver(CreateRoomSchema),
 		mode: 'onSubmit',
 	});
+
+	useEffect(() => {
+		if (isEditing && room) {
+			reset({
+				number: room.number,
+				type: room.type,
+				description: room.description,
+				price: room.price,
+				guests: room.guests,
+			});
+		}
+	}, [isEditing, reset, room]);
 
 	const handleFileChange = (e) => {
 		const files = Array.from(e.target.files);
@@ -85,23 +99,40 @@ const CreateRoomPageContainer = ({ className }) => {
 		setPreviewUrls(newUrls);
 	};
 
-	const onSubmit = async (data) => {
-		const formData = new FormData();
+	const toCreateRoom = async (data) => {
+		try {
+			const formData = new FormData();
 
-		Object.keys(data).forEach((key) => {
-			formData.append(key, data[key]);
-		});
+			Object.keys(data).forEach((key) => {
+				formData.append(key, data[key]);
+			});
 
-		selectedFiles.forEach((file) => {
-			formData.append('photos', file);
-		});
+			selectedFiles.forEach((file) => {
+				formData.append('photos', file);
+			});
 
-		dispatch(clearCurrentRoom());
-		await dispatch(createRoom(formData));
+			await dispatch(createRoom(formData)).unwrap();
 
-		if (currentRoom) {
-			navigate('/');
+			navigate(`/room/${room.id}`);
+		} catch (error) {
+			console.error('Ошибка при сохранении комнаты:', error.error);
 		}
+	};
+
+	const toUpdateRoom = async (id, data) => {
+		try {
+			await dispatch(updateRoom({ roomId: id, roomData: data })).unwrap();
+
+			navigate(`/room/${room.id}`);
+		} catch (error) {
+			console.error('Ошибка при сохранении комнаты:', error.error);
+		}
+	};
+
+	const onSubmit = (data) => {
+		if (isEditing) {
+			toUpdateRoom(room.id, data);
+		} else toCreateRoom(data);
 	};
 
 	const handleInputChange = (fieldName) => () => {
@@ -110,9 +141,10 @@ const CreateRoomPageContainer = ({ className }) => {
 
 	return (
 		<div className={className}>
-			<h1>Добавить новый номер</h1>
+			{isEditing ? <h1>Редактирование номера</h1> : <h1>Добавить новый номер</h1>}
 			<form onSubmit={handleSubmit(onSubmit)} encType='multipart/form-data'>
 				<div className='form-group'>
+					<label>Номер комнаты:</label>
 					<Input
 						type='number'
 						placeholder='Номер комнаты'
@@ -136,6 +168,7 @@ const CreateRoomPageContainer = ({ className }) => {
 				</div>
 
 				<div className='form-group'>
+					<label>Описание комнаты:</label>
 					<textarea
 						placeholder='Описание комнаты'
 						{...register('description')}
@@ -146,6 +179,7 @@ const CreateRoomPageContainer = ({ className }) => {
 				</div>
 
 				<div className='form-group'>
+					<label>Цена за сутки (₽):</label>
 					<Input
 						type='number'
 						placeholder='Цена за сутки (₽)'
@@ -156,6 +190,7 @@ const CreateRoomPageContainer = ({ className }) => {
 				</div>
 
 				<div className='form-group'>
+					<label>Количество гостей:</label>
 					<Input
 						type='number'
 						placeholder='Количество гостей'
@@ -165,30 +200,36 @@ const CreateRoomPageContainer = ({ className }) => {
 					{errors.guests && <p className='error-message'>{errors.guests.message}</p>}
 				</div>
 
-				<div className='form-group'>
-					<label>Фотографии комнаты:</label>
-					<input type='file' multiple accept='image/*' onChange={handleFileChange} />
-					<div className='image-previews'>
-						{previewUrls.map((url, index) => (
-							<div key={index} className='image-preview'>
-								<img src={url} alt={`Preview ${index}`} />
-								<button type='button' onClick={() => removeImage(index)} className='remove-image'>
-									×
-								</button>
-							</div>
-						))}
+				{isEditing ? (
+					<div className='auth-prompt'>
+						<p>Редактирование изображений недоступно в этой версии приложения!</p>
 					</div>
-				</div>
+				) : (
+					<div className='form-group'>
+						<label>Фотографии комнаты:</label>
+						<input type='file' multiple accept='image/*' onChange={handleFileChange} />
+						<div className='image-previews'>
+							{previewUrls.map((url, index) => (
+								<div key={index} className='image-preview'>
+									<img src={url} alt={`Preview ${index}`} />
+									<button type='button' onClick={() => removeImage(index)} className='remove-image'>
+										×
+									</button>
+								</div>
+							))}
+						</div>
+					</div>
+				)}
 
 				<Button type='submit' disabled={isLoading}>
-					Создать номер
+					{isEditing ? 'Сохранить изменения' : 'Создать номер'}
 				</Button>
 			</form>
 		</div>
 	);
 };
 
-export const CreateRoomPage = styled(CreateRoomPageContainer)`
+export const RoomForm = styled(RoomFormContainer)`
 	max-width: 600px;
 	margin: 0 auto;
 	padding: 20px;
@@ -238,6 +279,11 @@ export const CreateRoomPage = styled(CreateRoomPageContainer)`
 		color: #d32f2f;
 		font-size: 14px;
 		margin-top: 5px;
+	}
+
+	.auth-prompt {
+		text-align: center;
+		padding: 20px;
 	}
 
 	.image-previews {

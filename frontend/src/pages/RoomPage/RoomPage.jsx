@@ -1,45 +1,55 @@
-import styled from 'styled-components';
-import { clearCurrentRoom, selectCurrentRoom, selectCurrentUser } from '../../redux/slices';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { openModal, selectAppError, selectCurrentRoom, selectCurrentUser } from '../../redux/slices';
+import { useLayoutEffect } from 'react';
+import { deleteRoom, fetchRoom } from '../../redux/thunks';
 import { getTypeRoomName } from '../../utils';
 import { BASE_API_URL, ROLE } from '../../constants';
-import { Button } from '../../components';
+import styled from 'styled-components';
+import { Button, Modal } from '../../components';
 import { BookingForm } from './components';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
-import { fetchRoom } from '../../redux/thunks';
-import { useDispatch, useSelector } from 'react-redux';
 
 const RoomPageContainer = ({ className }) => {
 	const { id } = useParams();
-	const room = useSelector(selectCurrentRoom);
 	const currentUser = useSelector(selectCurrentUser);
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-	const includeBookings = true;
+	const room = useSelector(selectCurrentRoom);
+	const appError = useSelector(selectAppError);
 
-	useEffect(() => {
-		dispatch(clearCurrentRoom());
-
+	useLayoutEffect(() => {
+		if (appError) return;
 		dispatch(fetchRoom(id));
-
-		return () => dispatch(clearCurrentRoom());
-	}, [dispatch, id, includeBookings]);
+	}, [appError, dispatch, id]);
 
 	if (!room) {
-		return;
+		return null;
 	}
 
 	const type = getTypeRoomName(room.type);
 	const isAdmin = currentUser?.roleId === ROLE.ADMIN;
 
 	const handleEditRoom = () => {
-		navigate(`/admin/edit-room/${id}`);
+		navigate(`/room/${room.id}/edit`);
 	};
 
-	const handleDeleteRoom = () => {};
+	const onOpenModal = () => {
+		dispatch(openModal());
+	};
+
+	const handleDeleteRoom = async () => {
+		try {
+			await dispatch(deleteRoom(room.id)).unwrap();
+			navigate('/');
+		} catch (error) {
+			console.error('Ошибка удаления номера', error);
+		}
+	};
 
 	return (
 		<div className={className}>
+			<Modal title={'Вы уверены, что хотите удалить номер?'} onConfirm={handleDeleteRoom} />
+
 			<div className='room-header'>
 				<h1>
 					Номер {room.number} - {type}
@@ -47,7 +57,7 @@ const RoomPageContainer = ({ className }) => {
 				{isAdmin && (
 					<div className='admin-actions'>
 						<Button onClick={handleEditRoom}>Редактировать</Button>
-						<Button onClick={handleDeleteRoom} variant='danger'>
+						<Button onClick={onOpenModal} variant='danger'>
 							Удалить
 						</Button>
 					</div>
@@ -89,21 +99,26 @@ const RoomPageContainer = ({ className }) => {
 					</div>
 				</div>
 
-				{!isAdmin && (
-					<div className='booking-section'>
-						<h2>Забронировать номер</h2>
+				<div className='booking-section'>
+					<h2>Забронировать номер</h2>
 
-						{!currentUser ? (
-							<div className='auth-prompt'>
-								<p>
-									Для бронирования необходимо <Link to='/login'>войти</Link> в систему
-								</p>
-							</div>
-						) : (
-							<BookingForm room={room} />
-						)}
-					</div>
-				)}
+					{!currentUser ? (
+						<div className='auth-prompt'>
+							<p>
+								Для бронирования необходимо <Link to='/login'>войти</Link> в систему
+							</p>
+						</div>
+					) : isAdmin ? (
+						<div className='auth-prompt'>
+							<p>
+								Бронирование недоступно для Администратора. Войдите в систему под пользовательским
+								аккаунтом
+							</p>
+						</div>
+					) : (
+						<BookingForm room={room} />
+					)}
+				</div>
 			</div>
 		</div>
 	);

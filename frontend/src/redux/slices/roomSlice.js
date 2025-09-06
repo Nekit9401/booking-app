@@ -38,8 +38,8 @@ const roomSlice = createSlice({
 			}
 		});
 		builder.addCase(deleteRoom.fulfilled, (state, action) => {
-			state.items = state.items.filter((item) => item.id !== action.payload.data.id);
-			if (state.currentRoom && state.currentRoom.id === action.payload.data.id) {
+			state.items = state.items.filter((item) => item.id !== action.payload.id);
+			if (state.currentRoom && state.currentRoom.id === action.payload.id) {
 				state.currentRoom = null;
 			}
 		});

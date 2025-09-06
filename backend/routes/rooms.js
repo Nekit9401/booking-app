@@ -43,7 +43,7 @@ router.post('/', authenticated, isAdmin(), upload.array('photos', 10), async (re
 
 		res.send({ data: mapRoom(room) });
 	} catch (error) {
-		if (error.message === 'Номер с таким числом уже существует') {
+		if (error.message === 'Номер комнаты уже занят!') {
 			res.status(409).send({ error: error.message });
 		} else {
 			res.status(500).send({ error: error.message || 'Ошибка при создании номера' });
@@ -61,7 +61,7 @@ router.patch('/:id', authenticated, isAdmin(), async (req, res) => {
 
 		res.send({ data: mapRoom(room) });
 	} catch (error) {
-		if (error.message === 'Номер с таким числом уже существует') {
+		if (error.message === 'Номер комнаты уже занят!') {
 			res.status(409).send({ error: error.message });
 		} else {
 			res.status(500).send({ error: error.message || 'Ошибка при обновлении номера' });
