@@ -16,6 +16,9 @@ const bookingSlice = createSlice({
 		clearCurrentBooking: (state) => {
 			state.currentBooking = null;
 		},
+		clearGlobalBookings: (state) => {
+			state.items = initialState.items;
+		},
 	},
 	extraReducers: (builder) => {
 		builder.addCase(fetchUserBookings.fulfilled, (state, action) => {
@@ -42,7 +45,7 @@ const bookingSlice = createSlice({
 	},
 });
 
-export const { setCurrentBooking, clearCurrentBooking } = bookingSlice.actions;
+export const { setCurrentBooking, clearCurrentBooking, clearGlobalBookings } = bookingSlice.actions;
 
 export const selectBookings = (state) => state.bookings.items;
 export const selectCurrentBooking = (state) => state.bookings.currentBooking;

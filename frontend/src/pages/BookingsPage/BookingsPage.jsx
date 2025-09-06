@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { clearCurrentBooking, selectBookings, selectCurrentBooking, selectCurrentUser } from '../../redux/slices';
+import {
+	clearCurrentBooking,
+	clearGlobalBookings,
+	selectBookings,
+	selectCurrentBooking,
+	selectCurrentUser,
+	setSuccessMessage,
+} from '../../redux/slices';
 import { cancelBooking, fetchUserBookings } from '../../redux/thunks';
 import { Button, FilterPanel, Modal } from '../../components';
 import { BookingCard } from './components';
@@ -18,6 +25,8 @@ const BookingsPageContainer = ({ className }) => {
 		if (user) {
 			dispatch(fetchUserBookings());
 		}
+
+		return () => dispatch(clearGlobalBookings());
 	}, [dispatch, user]);
 
 	if (!bookings) {
@@ -30,10 +39,15 @@ const BookingsPageContainer = ({ className }) => {
 	});
 
 	const handleConfirmCancel = async () => {
-		if (currentBooking) {
-			await dispatch(cancelBooking(currentBooking.id));
-			dispatch(clearCurrentBooking());
-			dispatch(fetchUserBookings());
+		try {
+			if (currentBooking) {
+				await dispatch(cancelBooking(currentBooking.id)).unwrap();
+				dispatch(setSuccessMessage('Бронирование отменено!'));
+				dispatch(clearCurrentBooking());
+				dispatch(fetchUserBookings());
+			}
+		} catch (error) {
+			console.error(error);
 		}
 	};
 

@@ -1,7 +1,13 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { openModal, selectAppError, selectCurrentRoom, selectCurrentUser } from '../../redux/slices';
-import { useLayoutEffect } from 'react';
+import {
+	clearCurrentRoom,
+	openModal,
+	selectCurrentRoom,
+	selectCurrentUser,
+	setSuccessMessage,
+} from '../../redux/slices';
+import { useEffect } from 'react';
 import { deleteRoom, fetchRoom } from '../../redux/thunks';
 import { getTypeRoomName } from '../../utils';
 import { BASE_API_URL, ROLE } from '../../constants';
@@ -15,16 +21,13 @@ const RoomPageContainer = ({ className }) => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const room = useSelector(selectCurrentRoom);
-	const appError = useSelector(selectAppError);
 
-	useLayoutEffect(() => {
-		if (appError) return;
+	useEffect(() => {
+		dispatch(clearCurrentRoom());
 		dispatch(fetchRoom(id));
-	}, [appError, dispatch, id]);
+	}, [dispatch, id]);
 
-	if (!room) {
-		return null;
-	}
+	if (!room) return;
 
 	const type = getTypeRoomName(room.type);
 	const isAdmin = currentUser?.roleId === ROLE.ADMIN;
@@ -40,6 +43,9 @@ const RoomPageContainer = ({ className }) => {
 	const handleDeleteRoom = async () => {
 		try {
 			await dispatch(deleteRoom(room.id)).unwrap();
+
+			dispatch(setSuccessMessage('Номер удален!'));
+
 			navigate('/');
 		} catch (error) {
 			console.error('Ошибка удаления номера', error);
@@ -125,6 +131,11 @@ const RoomPageContainer = ({ className }) => {
 };
 
 export const RoomPage = styled(RoomPageContainer)`
+	h2 {
+		text-align: center;
+		margin-top: 100px;
+	}
+
 	padding: 20px;
 	max-width: 1200px;
 	margin: 0 auto;

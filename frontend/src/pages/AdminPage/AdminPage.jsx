@@ -1,6 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { clearCurrentBooking, selectBookings, selectCurrentBooking, selectCurrentUser } from '../../redux/slices';
+import {
+	clearCurrentBooking,
+	selectBookings,
+	selectCurrentBooking,
+	selectCurrentUser,
+	setSuccessMessage,
+} from '../../redux/slices';
 import { useEffect, useState } from 'react';
 import { ROLE } from '../../constants';
 import { cancelBooking, fetchAllBookings } from '../../redux/thunks';
@@ -31,10 +37,15 @@ const AdminPageContainer = ({ className }) => {
 	});
 
 	const handleConfirmCancel = async () => {
-		if (currentBooking) {
-			await dispatch(cancelBooking(currentBooking.id));
-			dispatch(clearCurrentBooking());
-			dispatch(fetchAllBookings());
+		try {
+			if (currentBooking) {
+				await dispatch(cancelBooking(currentBooking.id)).unwrap();
+				dispatch(setSuccessMessage('Бронирование пользователя отменено!'));
+				dispatch(clearCurrentBooking());
+				dispatch(fetchAllBookings());
+			}
+		} catch (error) {
+			console.error(error);
 		}
 	};
 

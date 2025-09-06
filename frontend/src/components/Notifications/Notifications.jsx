@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { clearAuthError, clearError, selectAppAuthError, selectAppError } from '../../redux/slices/appSlice';
+import {
+	clearAuthError,
+	clearError,
+	clearSuccessMessage,
+	selectAppAuthError,
+	selectAppError,
+	selectAppSuccessMessage,
+} from '../../redux/slices/appSlice';
 import styled, { keyframes } from 'styled-components';
 
 const slideIn = keyframes`
@@ -33,29 +40,37 @@ const NotificationContainer = styled.div`
 	max-width: 350px;
 `;
 
-const Notification = styled.div`
-	background: #fbdee2ed;
-	color: #c62828;
+const StyledNotification = styled.div`
 	padding: 16px;
 	border-radius: 8px;
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 	margin-bottom: 12px;
-	border-left: 4px solid #c62828;
+	border-left: 4px solid;
 	animation: ${slideIn} 0.3s ease forwards;
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
 
 	&.exiting {
 		animation: ${slideOut} 0.3s ease forwards;
 	}
 
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-start;
+	&.error {
+		background: #fbdee2ed;
+		color: #c62828;
+		border-left-color: #c62828;
+	}
+
+	&.success {
+		background: #d4edda;
+		color: #155724;
+		border-left-color: #28a745;
+	}
 `;
 
 const CloseButton = styled.button`
 	background: none;
 	border: none;
-	color: #c62828;
 	cursor: pointer;
 	font-size: 18px;
 	margin-left: 12px;
@@ -64,19 +79,38 @@ const CloseButton = styled.button`
 	&:hover {
 		opacity: 0.8;
 	}
+
+	.error & {
+		color: #c62828;
+	}
+
+	.success & {
+		color: #155724;
+	}
 `;
 
-export const ErrorNotification = () => {
+export const Notifications = ({ className }) => {
 	const dispatch = useDispatch();
 	const error = useSelector(selectAppError);
 	const authError = useSelector(selectAppAuthError);
+	const successMessage = useSelector(selectAppSuccessMessage);
 	const [visible, setVisible] = useState(false);
 	const [exiting, setExiting] = useState(false);
+	const [notificationType, setNotificationType] = useState('error');
+	const [message, setMessage] = useState('');
 
 	useEffect(() => {
-		if (error || authError) {
+		if (error || authError || successMessage) {
 			setVisible(true);
 			setExiting(false);
+
+			if (error || authError) {
+				setNotificationType('error');
+				setMessage(error || authError);
+			} else if (successMessage) {
+				setNotificationType('success');
+				setMessage(successMessage);
+			}
 
 			const timer = setTimeout(() => {
 				setExiting(true);
@@ -84,6 +118,7 @@ export const ErrorNotification = () => {
 					setVisible(false);
 					dispatch(clearError());
 					dispatch(clearAuthError());
+					dispatch(clearSuccessMessage());
 				}, 300);
 			}, 5000);
 
@@ -91,25 +126,26 @@ export const ErrorNotification = () => {
 		} else {
 			setVisible(false);
 		}
-	}, [error, dispatch, authError]);
+	}, [error, authError, successMessage, dispatch]);
 
 	const handleClose = () => {
 		setExiting(true);
-
 		setTimeout(() => {
 			setVisible(false);
 			dispatch(clearError());
+			dispatch(clearAuthError());
+			dispatch(clearSuccessMessage());
 		}, 300);
 	};
 
 	if (!visible) return null;
 
 	return (
-		<NotificationContainer>
-			<Notification className={exiting ? 'exiting' : ''}>
-				<div>{error || authError}</div>
+		<NotificationContainer className={className}>
+			<StyledNotification className={`${notificationType} ${exiting ? 'exiting' : ''}`}>
+				<div>{message}</div>
 				<CloseButton onClick={handleClose}>&times;</CloseButton>
-			</Notification>
+			</StyledNotification>
 		</NotificationContainer>
 	);
 };

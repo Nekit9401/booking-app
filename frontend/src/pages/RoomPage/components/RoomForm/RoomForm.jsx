@@ -7,20 +7,19 @@ import { useMatch, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { createRoom, updateRoom } from '../../../../redux/thunks';
-import { selectAppLoading, selectCurrentRoom } from '../../../../redux/slices';
+import { selectAppLoading, selectCurrentRoom, setSuccessMessage } from '../../../../redux/slices';
 import { Button, Input } from '../../../../components';
 
 const CreateRoomSchema = yup.object({
 	number: yup
 		.number()
-		.required('Введите номер комнаты')
 		.typeError('Номер должен быть числом')
+		.required('Введите номер комнаты')
 		.positive('Номер должен быть положительным')
 		.integer('Номер должен быть целым числом'),
 	type: yup
 		.number()
 		.required('Выберите тип комнаты')
-		.typeError('Тип должен быть числом')
 		.oneOf([ROOM_TYPES.ECONOM.id, ROOM_TYPES.STANDART.id, ROOM_TYPES.LUX.id], 'Неверный тип комнаты'),
 	description: yup
 		.string()
@@ -28,13 +27,13 @@ const CreateRoomSchema = yup.object({
 		.min(10, 'Описание должно содержать минимум 10 символов'),
 	price: yup
 		.number()
-		.required('Введите цену')
 		.typeError('Цена должна быть числом')
+		.required('Введите цену')
 		.positive('Цена должна быть положительной'),
 	guests: yup
 		.number()
-		.required('Введите количество гостей')
 		.typeError('Количество гостей должно быть числом')
+		.required('Введите количество гостей')
 		.positive('Количество гостей должно быть положительным')
 		.integer('Количество гостей должно быть целым числом'),
 });
@@ -111,17 +110,23 @@ const RoomFormContainer = ({ className }) => {
 				formData.append('photos', file);
 			});
 
-			await dispatch(createRoom(formData)).unwrap();
+			const result = await dispatch(createRoom(formData)).unwrap();
 
-			navigate(`/room/${room.id}`);
+			dispatch(setSuccessMessage('Номер успешно создан!'));
+
+			navigate(`/room/${result.data.id}`);
 		} catch (error) {
-			console.error('Ошибка при сохранении комнаты:', error.error);
+			console.error('Ошибка при создании комнаты:', error.error);
 		}
 	};
 
 	const toUpdateRoom = async (id, data) => {
+		console.log(id);
+
 		try {
 			await dispatch(updateRoom({ roomId: id, roomData: data })).unwrap();
+
+			dispatch(setSuccessMessage('Изменения сохранены!'));
 
 			navigate(`/room/${room.id}`);
 		} catch (error) {

@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import { Button, Input } from '../../components';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectAppLoading } from '../../redux/slices/appSlice';
+import { selectAppLoading, setSuccessMessage } from '../../redux/slices/appSlice';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { registerUser } from '../../redux/thunks';
 import { selectCurrentUser } from '../../redux/slices';
@@ -59,7 +59,12 @@ const RegisterPageContainer = ({ className }) => {
 	}, [currentUser, navigate]);
 
 	const onSubmit = async ({ login, password }) => {
-		await dispatch(registerUser({ login, password }));
+		try {
+			await dispatch(registerUser({ login, password })).unwrap();
+			dispatch(setSuccessMessage('Регистрация прошла успешно!'));
+		} catch (error) {
+			console.error(error);
+		}
 	};
 
 	const handleInputChange = (fieldName) => () => {

@@ -4,7 +4,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button } from '../../../../components';
-import { selectAppLoading } from '../../../../redux/slices';
+import { selectAppLoading, setSuccessMessage } from '../../../../redux/slices';
 import { createBooking } from '../../../../redux/thunks';
 import { formateDate } from '../../../../utils';
 import { registerLocale } from 'react-datepicker';
@@ -36,47 +36,53 @@ const BookingFormContainer = ({ className, room }) => {
 	};
 
 	const handleBook = async () => {
-		if (!checkIn || !checkOut) {
-			setError('Выберите даты заезда и выезда');
-			return;
+		try {
+			if (!checkIn || !checkOut) {
+				setError('Выберите даты заезда и выезда');
+				return;
+			}
+
+			const checkInDate = new Date(checkIn);
+			const checkOutDate = new Date(checkOut);
+
+			if (checkInDate >= checkOutDate) {
+				setError('Дата выезда должна быть позже даты заезда');
+				return;
+			}
+
+			const isOverlapping = room.bookings?.some((booking) => {
+				const bookingCheckIn = new Date(booking.checkIn);
+
+				const bookingCheckOut = new Date(booking.checkOut);
+
+				return (
+					(checkInDate >= bookingCheckIn && checkInDate < bookingCheckOut) ||
+					(checkOutDate > bookingCheckIn && checkOutDate <= bookingCheckOut) ||
+					(checkInDate <= bookingCheckIn && checkOutDate >= bookingCheckOut)
+				);
+			});
+
+			if (isOverlapping) {
+				setError('Выбранные даты пересекаются с существующим бронированием');
+				return;
+			}
+
+			setError('');
+
+			await dispatch(
+				createBooking({
+					room: room.id,
+					checkIn: checkInDate.toISOString(),
+					checkOut: checkOutDate.toISOString(),
+				}),
+			).unwrap();
+
+			dispatch(setSuccessMessage('Номер успешно забронирован!'));
+
+			navigate('/bookings');
+		} catch (error) {
+			console.error(error);
 		}
-
-		const checkInDate = new Date(checkIn);
-		const checkOutDate = new Date(checkOut);
-
-		if (checkInDate >= checkOutDate) {
-			setError('Дата выезда должна быть позже даты заезда');
-			return;
-		}
-
-		const isOverlapping = room.bookings?.some((booking) => {
-			const bookingCheckIn = new Date(booking.checkIn);
-
-			const bookingCheckOut = new Date(booking.checkOut);
-
-			return (
-				(checkInDate >= bookingCheckIn && checkInDate < bookingCheckOut) ||
-				(checkOutDate > bookingCheckIn && checkOutDate <= bookingCheckOut) ||
-				(checkInDate <= bookingCheckIn && checkOutDate >= bookingCheckOut)
-			);
-		});
-
-		if (isOverlapping) {
-			setError('Выбранные даты пересекаются с существующим бронированием');
-			return;
-		}
-
-		setError('');
-
-		await dispatch(
-			createBooking({
-				room: room.id,
-				checkIn: checkInDate.toISOString(),
-				checkOut: checkOutDate.toISOString(),
-			}),
-		);
-
-		navigate('/bookings');
 	};
 
 	const isDateDisabled = (date) => {

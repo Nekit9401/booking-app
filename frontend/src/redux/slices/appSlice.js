@@ -4,6 +4,7 @@ const initialState = {
 	isLoading: false,
 	error: null,
 	authError: null,
+	successMessage: null,
 	isModalOpen: false,
 };
 
@@ -22,6 +23,12 @@ const appSlice = createSlice({
 		},
 		clearAuthError: (state) => {
 			state.authError = null;
+		},
+		setSuccessMessage: (state, action) => {
+			state.successMessage = action.payload;
+		},
+		clearSuccessMessage: (state) => {
+			state.successMessage = null;
 		},
 		openModal: (state) => {
 			state.isModalOpen = true;
@@ -60,11 +67,21 @@ const appSlice = createSlice({
 	},
 });
 
-export const { setError, clearError, setAuthError, openModal, closeModal, clearAuthError } = appSlice.actions;
+export const {
+	setError,
+	clearError,
+	setAuthError,
+	openModal,
+	closeModal,
+	clearAuthError,
+	setSuccessMessage,
+	clearSuccessMessage,
+} = appSlice.actions;
 
 export const selectAppLoading = (state) => state.app.isLoading;
 export const selectAppError = (state) => state.app.error;
 export const selectAppAuthError = (state) => state.app.authError;
 export const selectisModalOpen = (state) => state.app.isModalOpen;
+export const selectAppSuccessMessage = (state) => state.app.successMessage;
 
 export const { reducer: appReduсer } = appSlice;

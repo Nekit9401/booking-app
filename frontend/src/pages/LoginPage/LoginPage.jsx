@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import { Button, Input } from '../../components';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectAppLoading } from '../../redux/slices/appSlice';
+import { selectAppLoading, setSuccessMessage } from '../../redux/slices/appSlice';
 import { Link, useNavigate } from 'react-router-dom';
 import { selectCurrentUser } from '../../redux/slices';
 import { loginUser } from '../../redux/thunks';
@@ -53,7 +53,12 @@ const LoginPageContainer = ({ className }) => {
 	}, [currentUser, navigate]);
 
 	const onSubmit = async ({ login, password }) => {
-		await dispatch(loginUser({ login, password }));
+		try {
+			await dispatch(loginUser({ login, password })).unwrap();
+			dispatch(setSuccessMessage('Добро пожаловать!'));
+		} catch (error) {
+			console.error(error);
+		}
 	};
 
 	const handleInputChange = (fieldName) => () => {
