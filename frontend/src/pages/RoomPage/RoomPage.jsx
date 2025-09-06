@@ -54,7 +54,10 @@ const RoomPageContainer = ({ className }) => {
 
 	return (
 		<div className={className}>
-			<Modal title={'Вы уверены, что хотите удалить номер?'} onConfirm={handleDeleteRoom} />
+			<Modal
+				title={'Вы уверены, что хотите удалить номер? Все брони номера так же будут удалены.'}
+				onConfirm={handleDeleteRoom}
+			/>
 
 			<div className='room-header'>
 				<h1>

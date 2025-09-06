@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
-import { BookingsPage, HomePage, LoginPage, RegisterPage, RoomPage, AdminPage } from './pages';
+import { BookingsPage, HomePage, LoginPage, RegisterPage, RoomPage, AdminPage, NotFoundPage } from './pages';
 import { MainLayout, Notifications } from './components';
 import { ProtectedRoute } from './components';
 import { AdminRoute } from './components';
@@ -48,6 +48,7 @@ export const App = () => {
 						}
 					/>
 				</Route>
+				<Route path='*' element={<NotFoundPage />} />
 			</Routes>
 			<Notifications />
 		</>
