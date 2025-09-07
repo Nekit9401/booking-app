@@ -84,7 +84,7 @@ export const Header = () => {
 	return (
 		<HeaderContainer>
 			<Nav>
-				<Logo to='/'>Отель "Шалка"</Logo>
+				<Logo to='/'>Отель "Пятница"</Logo>
 
 				{user ? (
 					<UserMenu>

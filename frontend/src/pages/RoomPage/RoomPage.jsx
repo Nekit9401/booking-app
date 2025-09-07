@@ -7,13 +7,14 @@ import {
 	selectCurrentUser,
 	setSuccessMessage,
 } from '../../redux/slices';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { deleteRoom, fetchRoom } from '../../redux/thunks';
 import { getTypeRoomName } from '../../utils';
-import { BASE_API_URL, ROLE } from '../../constants';
+import { ROLE } from '../../constants';
 import styled from 'styled-components';
 import { Button, Modal } from '../../components';
 import { BookingForm } from './components';
+import { NotFoundPage } from '../NotFoundPage/NotFoundPage';
 
 const RoomPageContainer = ({ className }) => {
 	const { id } = useParams();
@@ -21,11 +22,23 @@ const RoomPageContainer = ({ className }) => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const room = useSelector(selectCurrentRoom);
+	const [roomNotFound, setRoomNotFound] = useState(false);
 
 	useEffect(() => {
-		dispatch(clearCurrentRoom());
-		dispatch(fetchRoom(id));
+		const fetchDataRoom = async () => {
+			try {
+				dispatch(clearCurrentRoom());
+				await dispatch(fetchRoom(id)).unwrap();
+			} catch (error) {
+				console.error(error.message);
+				setRoomNotFound(true);
+			}
+		};
+
+		fetchDataRoom();
 	}, [dispatch, id]);
+
+	if (roomNotFound) return <NotFoundPage />;
 
 	if (!room) return;
 
@@ -77,11 +90,7 @@ const RoomPageContainer = ({ className }) => {
 				<div className='room-gallery'>
 					{room.photos && room.photos.length > 0 ? (
 						room.photos.map((photo, index) => (
-							<img
-								key={index}
-								src={`${BASE_API_URL}${photo}`}
-								alt={`Номер ${room.number} - фото ${index + 1}`}
-							/>
+							<img key={index} src={photo} alt={`Номер ${room.number} - фото ${index + 1}`} />
 						))
 					) : (
 						<div className='no-photos'>Фотографии отсутствуют</div>

@@ -22,7 +22,6 @@ const getRoom = async (id) => {
 	}
 
 	const bookings = await getRoomBookings(id);
-	console.log(room.toObject());
 
 	return {
 		...room.toObject(),

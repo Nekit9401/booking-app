@@ -121,8 +121,6 @@ const RoomFormContainer = ({ className }) => {
 	};
 
 	const toUpdateRoom = async (id, data) => {
-		console.log(id);
-
 		try {
 			await dispatch(updateRoom({ roomId: id, roomData: data })).unwrap();
 

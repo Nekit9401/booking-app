@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+    app:
+        build: .
+        image: booking
+        ports:
+            - '3007:3002'
+        volumes:
+            - /path/on/host/uploads/rooms:/usr/src/app/backend/uploads/rooms
