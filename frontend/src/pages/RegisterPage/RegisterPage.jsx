@@ -1,51 +1,15 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import { Button, Input } from '../../components';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectAppLoading, setSuccessMessage } from '../../redux/slices/appSlice';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { registerUser } from '../../redux/thunks';
 import { selectCurrentUser } from '../../redux/slices';
 import { useEffect } from 'react';
-
-const RegSchema = yup.object({
-	login: yup
-		.string()
-		.required('Введите Логин')
-		.matches(/^\w+$/, 'Неверный Логин. Допускаются только буквы и цифры')
-		.min(3, 'Неверный Логин. Минимум 3 символа')
-		.max(15, 'Неверный Логин. Максимум 15 символов'),
-
-	password: yup
-		.string()
-		.required('Введите Пароль')
-		.matches(/^[\w#%]+$/, 'Неверный Пароль. Допускаются буквы, цифры и знаки # %')
-		.min(6, 'Неверный Пароль. Минимум 6 символов')
-		.max(20, 'Неверный Пароль. Максимум 20 символов'),
-
-	passcheck: yup
-		.string()
-		.required('Повторите Пароль')
-		.oneOf([yup.ref('password'), null], 'Пароли не совпадают'),
-});
+import { useAuthForm } from '../../hooks';
 
 const RegisterPageContainer = ({ className }) => {
-	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-		clearErrors,
-	} = useForm({
-		defaultValues: {
-			login: '',
-			password: '',
-			passcheck: '',
-		},
-		resolver: yupResolver(RegSchema),
-		mode: 'onSubmit',
-	});
+	const { register, handleSubmit, errors, handleInputChange, isFormError } = useAuthForm();
 
 	const dispatch = useDispatch();
 	const isLoading = useSelector(selectAppLoading);
@@ -66,12 +30,6 @@ const RegisterPageContainer = ({ className }) => {
 			console.error(error);
 		}
 	};
-
-	const handleInputChange = (fieldName) => () => {
-		clearErrors(fieldName);
-	};
-
-	const isFormError = errors?.login?.message || errors?.password?.message || errors?.passcheck?.message;
 
 	return (
 		<div className={className}>
