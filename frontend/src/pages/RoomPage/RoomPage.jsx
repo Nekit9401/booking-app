@@ -1,24 +1,17 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import {
-	clearCurrentRoom,
-	openModal,
-	selectCurrentRoom,
-	selectCurrentUser,
-	setSuccessMessage,
-} from '../../redux/slices';
+import { clearCurrentRoom, openModal, selectCurrentRoom, setSuccessMessage } from '../../redux/slices';
 import { useEffect, useState } from 'react';
 import { deleteRoom, fetchRoom } from '../../redux/thunks';
 import { getTypeRoomName } from '../../utils';
-import { ROLE } from '../../constants';
 import styled from 'styled-components';
 import { Button, Modal } from '../../components';
 import { BookingForm } from './components';
 import { NotFoundPage } from '../NotFoundPage/NotFoundPage';
+import { withAdminAccessUI } from '../../hocks';
 
-const RoomPageContainer = ({ className }) => {
+const RoomPageContainer = ({ className, isAdmin, currentUser }) => {
 	const { id } = useParams();
-	const currentUser = useSelector(selectCurrentUser);
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const room = useSelector(selectCurrentRoom);
@@ -43,7 +36,6 @@ const RoomPageContainer = ({ className }) => {
 	if (!room) return;
 
 	const type = getTypeRoomName(room.type);
-	const isAdmin = currentUser?.roleId === ROLE.ADMIN;
 
 	const handleEditRoom = () => {
 		navigate(`/room/${room.id}/edit`);
@@ -142,7 +134,7 @@ const RoomPageContainer = ({ className }) => {
 	);
 };
 
-export const RoomPage = styled(RoomPageContainer)`
+const RoomPageStyled = styled(RoomPageContainer)`
 	h2 {
 		text-align: center;
 		margin-top: 100px;
@@ -268,3 +260,5 @@ export const RoomPage = styled(RoomPageContainer)`
 		}
 	}
 `;
+
+export const RoomPage = withAdminAccessUI(RoomPageStyled);
