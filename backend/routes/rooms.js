@@ -9,9 +9,27 @@ const router = express.Router({ mergeParams: true });
 
 router.get('/', async (req, res) => {
 	try {
-		const rooms = await getRooms();
+		const {
+			page = 1,
+			limit = 10,
+			sortBy = 'price',
+			sortOrder = 'asc',
+			type,
+			minPrice,
+			maxPrice,
+			guests,
+		} = req.query;
 
-		res.send({ data: rooms.map(mapRoom) });
+		const filters = { type, minPrice, maxPrice, guests };
+		const sort = { sortBy, sortOrder };
+		const pagination = { page, limit };
+
+		const result = await getRooms(filters, sort, pagination);
+
+		res.send({
+			data: result.rooms.map(mapRoom),
+			pagination: result.pagination,
+		});
 	} catch (error) {
 		res.status(500).send({ error: error.message || 'Ошибка при получении номеров' });
 	}

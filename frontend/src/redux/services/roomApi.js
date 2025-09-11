@@ -1,8 +1,8 @@
 import { api } from '../constants';
 
 export const roomsApi = {
-	getRooms: () => {
-		return api.get('/rooms');
+	getRooms: (params = {}) => {
+		return api.get('/rooms', { params });
 	},
 
 	getRoom: (id) => {

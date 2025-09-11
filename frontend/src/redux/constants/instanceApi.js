@@ -5,14 +5,3 @@ export const api = axios.create({
 	withCredentials: true,
 	timeout: 10000,
 });
-
-// api.interceptors.request.use(
-// 	async (config) => {
-// 		await new Promise((resolve) => setTimeout(resolve, 2500)); // 5 секунд
-
-// 		return config;
-// 	},
-// 	(error) => {
-// 		return Promise.reject(error);
-// 	},
-// );

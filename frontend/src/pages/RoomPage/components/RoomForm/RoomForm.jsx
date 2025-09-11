@@ -161,8 +161,8 @@ const RoomFormContainer = ({ className }) => {
 					<label>Тип комнаты:</label>
 					<select {...register('type')} onChange={handleInputChange('type')}>
 						<option value=''>Выберите тип</option>
-						{Object.entries(ROOM_TYPES).map(([, { id: roomId, name: typeName }]) => (
-							<option key={roomId} value={roomId}>
+						{Object.entries(ROOM_TYPES).map(([, { id: typeId, name: typeName }]) => (
+							<option key={typeId} value={typeId}>
 								{typeName}
 							</option>
 						))}

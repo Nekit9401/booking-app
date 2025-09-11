@@ -4,6 +4,17 @@ import { createRoom, deleteRoom, fetchRoom, fetchRooms, updateRoom } from '../th
 const initialState = {
 	items: [],
 	currentRoom: null,
+	pagination: {
+		page: 1,
+		limit: 6,
+		totalCount: 0,
+		totalPages: 1,
+	},
+	filters: {},
+	sort: {
+		sortBy: 'price',
+		sortOrder: 'asc',
+	},
 };
 
 const roomSlice = createSlice({
@@ -16,10 +27,20 @@ const roomSlice = createSlice({
 		clearCurrentRoom: (state) => {
 			state.currentRoom = null;
 		},
+		setFilters: (state, action) => {
+			state.filters = action.payload;
+		},
+		setSort: (state, action) => {
+			state.sort = action.payload;
+		},
+		setPagination: (state, action) => {
+			state.pagination = action.payload;
+		},
 	},
 	extraReducers: (builder) => {
 		builder.addCase(fetchRooms.fulfilled, (state, action) => {
 			state.items = action.payload.data;
+			state.pagination = action.payload.pagination;
 		});
 		builder.addCase(fetchRoom.fulfilled, (state, action) => {
 			state.currentRoom = action.payload.data;
@@ -46,9 +67,12 @@ const roomSlice = createSlice({
 	},
 });
 
-export const { setCurrentRoom, clearCurrentRoom } = roomSlice.actions;
+export const { setCurrentRoom, clearCurrentRoom, setFilters, setSort, setPagination } = roomSlice.actions;
 
 export const selectRooms = (state) => state.room.items;
 export const selectCurrentRoom = (state) => state.room.currentRoom;
+export const selectRoomFilters = (state) => state.room.filters;
+export const selectRoomSort = (state) => state.room.sort;
+export const selectRoomPagination = (state) => state.room.pagination;
 
 export const { reducer: roomReducer } = roomSlice;

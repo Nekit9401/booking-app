@@ -1,8 +1,50 @@
 const Booking = require('../models/Booking');
 const Room = require('../models/Room');
 
-const getRooms = async () => {
-	return Room.find();
+const getRooms = async (filters = {}, sort = {}, pagination = {}) => {
+	const { type, minPrice, maxPrice, guests } = filters;
+
+	const { sortBy = 'price', sortOrder = 'asc' } = sort;
+
+	const { page = 1, limit = 6 } = pagination;
+
+	const query = {};
+
+	if (type) {
+		query.type = type;
+	}
+
+	if (minPrice || maxPrice) {
+		query.price = {};
+
+		if (minPrice) query.price.$gte = parseInt(minPrice);
+		if (maxPrice) query.price.$lte = parseInt(maxPrice);
+	}
+
+	if (guests) {
+		query.guests = parseInt(guests);
+	}
+
+	const sortOptions = {};
+	sortOptions[sortBy] = sortOrder === 'desc' ? -1 : 1;
+
+	const [rooms, totalCount] = await Promise.all([
+		Room.find(query)
+			.sort(sortOptions)
+			.skip((page - 1) * limit)
+			.limit(parseInt(limit)),
+		Room.countDocuments(query),
+	]);
+
+	return {
+		rooms,
+		pagination: {
+			page: parseInt(page),
+			limit: parseInt(limit),
+			totalCount,
+			totalPages: Math.ceil(totalCount / limit),
+		},
+	};
 };
 
 const getRoomBookings = async (roomId) => {
