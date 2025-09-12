@@ -10,15 +10,21 @@ export const AccesControl = ({ children, isAdminRoute = false }) => {
 	const dispatch = useDispatch();
 
 	useEffect(() => {
-		if (!user) {
-			navigate('/login', { replace: true });
-			dispatch(setAuthError('Недоступно для неавторизованных пользователей'));
+		if (!user && isAdminRoute && user?.roleId !== ROLE.ADMIN) {
+			navigate('/', { replace: true });
+			dispatch(setAuthError('Ошибка доступа'));
 			return;
 		}
 
-		if (isAdminRoute && user?.roleId !== ROLE.ADMIN) {
+		if (user && isAdminRoute && user?.roleId !== ROLE.ADMIN) {
 			navigate('/', { replace: true });
 			dispatch(setAuthError('Ошибка доступа'));
+			return;
+		}
+
+		if (!user) {
+			navigate('/login', { replace: true });
+			dispatch(setAuthError('Недоступно для неавторизованных пользователей'));
 			return;
 		}
 	}, [user, navigate, dispatch, isAdminRoute]);
