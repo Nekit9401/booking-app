@@ -12,15 +12,15 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-app.use(express.static(path.resolve(__dirname, '..', 'frontend', 'dist')));
+// app.use(express.static(path.resolve(__dirname, '..', 'frontend', 'dist')));
 
 app.use('/api', routes);
 
 app.use('/uploads', express.static(path.resolve(__dirname, 'uploads')));
 
-app.get('/{*path}', (req, res) => {
-	res.sendFile(path.resolve(__dirname, '..', 'frontend', 'dist', 'index.html'));
-});
+// app.get('/{*path}', (req, res) => {
+// 	res.sendFile(path.resolve(__dirname, '..', 'frontend', 'dist', 'index.html'));
+// });
 
 mongoose
 	.connect(process.env.MONGODB_URL)

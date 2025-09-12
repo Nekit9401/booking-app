@@ -4,7 +4,6 @@ import { roomsApi } from '../services';
 export const fetchRooms = createAsyncThunk('rooms/fetchRooms', async (params = {}, { rejectWithValue }) => {
 	try {
 		const response = await roomsApi.getRooms(params);
-
 		return response.data;
 	} catch (error) {
 		return rejectWithValue(error.response?.data || { error: 'Ошибка сети' });
