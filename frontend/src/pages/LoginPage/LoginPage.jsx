@@ -1,6 +1,3 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 import { Button, Input } from '../../components';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,37 +6,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { selectCurrentUser } from '../../redux/slices';
 import { loginUser } from '../../redux/thunks';
 import { useEffect } from 'react';
-
-const LoginSchema = yup.object({
-	login: yup
-		.string()
-		.required('Введите Логин')
-		.matches(/^\w+$/, 'Неверный Логин. Допускаются только буквы и цифры')
-		.min(3, 'Неверный Логин. Минимум 3 символа')
-		.max(15, 'Неверный Логин. Максимум 15 символов'),
-
-	password: yup
-		.string()
-		.required('Введите Пароль')
-		.matches(/^[\w#%]+$/, 'Неверный Пароль. Допускаются буквы, цифры и знаки # %')
-		.min(6, 'Неверный Пароль. Минимум 6 символов')
-		.max(20, 'Неверный Пароль. Максимум 20 символов'),
-});
+import { useAuthForm } from '../../hooks';
 
 const LoginPageContainer = ({ className }) => {
-	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-		clearErrors,
-	} = useForm({
-		defaultValues: {
-			login: '',
-			password: '',
-		},
-		resolver: yupResolver(LoginSchema),
-		mode: 'onSubmit',
-	});
+	const { register, handleSubmit, errors, handleInputChange, isFormError } = useAuthForm(true);
 
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
@@ -60,12 +30,6 @@ const LoginPageContainer = ({ className }) => {
 			console.error(error);
 		}
 	};
-
-	const handleInputChange = (fieldName) => () => {
-		clearErrors(fieldName);
-	};
-
-	const isFormError = errors?.login?.message || errors?.password?.message;
 
 	return (
 		<div className={className}>

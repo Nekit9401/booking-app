@@ -2,33 +2,33 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
 	clearCurrentRoom,
+	clearReviews,
 	openModal,
 	selectCurrentRoom,
-	selectCurrentUser,
+	selectReviews,
 	setSuccessMessage,
 } from '../../redux/slices';
 import { useEffect, useState } from 'react';
-import { deleteRoom, fetchRoom } from '../../redux/thunks';
+import { createReview, deleteReview, deleteRoom, fetchRoom, fetchRoomReviews } from '../../redux/thunks';
 import { getTypeRoomName } from '../../utils';
-import { ROLE } from '../../constants';
 import styled from 'styled-components';
 import { Button, Modal } from '../../components';
-import { BookingForm } from './components';
+import { BookingForm, ReviewsSection } from './components';
 import { NotFoundPage } from '../NotFoundPage/NotFoundPage';
+import { withAdminAccessUI } from '../../hocks';
 
-const RoomPageContainer = ({ className }) => {
+const RoomPageContainer = ({ className, isAdmin, currentUser }) => {
 	const { id } = useParams();
-	const currentUser = useSelector(selectCurrentUser);
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const room = useSelector(selectCurrentRoom);
+	const reviews = useSelector(selectReviews);
 	const [roomNotFound, setRoomNotFound] = useState(false);
 
 	useEffect(() => {
 		const fetchDataRoom = async () => {
 			try {
-				dispatch(clearCurrentRoom());
-				await dispatch(fetchRoom(id)).unwrap();
+				await Promise.all([dispatch(fetchRoom(id)).unwrap(), dispatch(fetchRoomReviews(id)).unwrap()]);
 			} catch (error) {
 				console.error(error.message);
 				setRoomNotFound(true);
@@ -36,6 +36,11 @@ const RoomPageContainer = ({ className }) => {
 		};
 
 		fetchDataRoom();
+
+		return () => {
+			dispatch(clearCurrentRoom());
+			dispatch(clearReviews());
+		};
 	}, [dispatch, id]);
 
 	if (roomNotFound) return <NotFoundPage />;
@@ -43,7 +48,6 @@ const RoomPageContainer = ({ className }) => {
 	if (!room) return;
 
 	const type = getTypeRoomName(room.type);
-	const isAdmin = currentUser?.roleId === ROLE.ADMIN;
 
 	const handleEditRoom = () => {
 		navigate(`/room/${room.id}/edit`);
@@ -62,6 +66,26 @@ const RoomPageContainer = ({ className }) => {
 			navigate('/');
 		} catch (error) {
 			console.error('Ошибка удаления номера', error);
+		}
+	};
+
+	const handleCreateReview = async (comment) => {
+		try {
+			await dispatch(createReview({ roomId: id, reviewData: { comment } })).unwrap();
+
+			dispatch(setSuccessMessage('Отзыв добавлен!'));
+		} catch (error) {
+			console.error('Ошибка добавления отзыва', error);
+		}
+	};
+
+	const handleDeleteReview = async (reviewId) => {
+		try {
+			await dispatch(deleteReview({ roomId: id, reviewId })).unwrap();
+
+			dispatch(setSuccessMessage('Отзыв удален!'));
+		} catch (error) {
+			console.error('Ошибка удаления отзыва', error);
 		}
 	};
 
@@ -137,12 +161,21 @@ const RoomPageContainer = ({ className }) => {
 						<BookingForm room={room} />
 					)}
 				</div>
+
+				<div className='reviews-section'>
+					<h2>Отзывы</h2>
+					<ReviewsSection
+						reviews={reviews}
+						onCreateReview={handleCreateReview}
+						onDeleteReview={handleDeleteReview}
+					/>
+				</div>
 			</div>
 		</div>
 	);
 };
 
-export const RoomPage = styled(RoomPageContainer)`
+const RoomPageStyled = styled(RoomPageContainer)`
 	h2 {
 		text-align: center;
 		margin-top: 100px;
@@ -267,4 +300,16 @@ export const RoomPage = styled(RoomPageContainer)`
 			}
 		}
 	}
+
+	.reviews-section {
+		background-color: #f9f9f9;
+		padding: 25px;
+		border-radius: 8px;
+
+		h2 {
+			margin-top: 0;
+		}
+	}
 `;
+
+export const RoomPage = withAdminAccessUI(RoomPageStyled);

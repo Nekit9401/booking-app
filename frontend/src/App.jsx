@@ -1,8 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import { BookingsPage, HomePage, LoginPage, RegisterPage, RoomPage, AdminPage, NotFoundPage } from './pages';
-import { MainLayout, Notifications } from './components';
-import { ProtectedRoute } from './components';
-import { AdminRoute } from './components';
+import { AccesControl, MainLayout, Notifications } from './components';
 import { RoomForm } from './pages/RoomPage/components';
 
 export const App = () => {
@@ -17,34 +15,34 @@ export const App = () => {
 					<Route
 						path='room/:id/edit'
 						element={
-							<AdminRoute>
+							<AccesControl isAdminRoute={true}>
 								<RoomForm />
-							</AdminRoute>
+							</AccesControl>
 						}
 					/>
 					<Route
 						path='room/create'
 						element={
-							<AdminRoute>
+							<AccesControl isAdminRoute={true}>
 								<RoomForm />
-							</AdminRoute>
+							</AccesControl>
 						}
 					/>
 					<Route
 						path='admin'
 						element={
-							<AdminRoute>
+							<AccesControl isAdminRoute={true}>
 								<AdminPage />
-							</AdminRoute>
+							</AccesControl>
 						}
 					/>
 
 					<Route
 						path='bookings'
 						element={
-							<ProtectedRoute>
+							<AccesControl>
 								<BookingsPage />
-							</ProtectedRoute>
+							</AccesControl>
 						}
 					/>
 				</Route>

@@ -1,6 +1,8 @@
 const express = require('express');
-const { getRooms, getRoom, createRoom, updateRoom, deleteRoom, getRoomTypes } = require('../controllers/rooms');
+const { getRooms, getRoom, createRoom, updateRoom, deleteRoom } = require('../controllers/rooms');
+const { getRoomReviews, createReview, deleteReview } = require('../controllers/reviews');
 const mapRoom = require('../helpers/mapRoom');
+const mapReview = require('../helpers/mapReview');
 const authenticated = require('../middlewares/authenticated');
 const isAdmin = require('../middlewares/isAdmin');
 const upload = require('../middlewares/upload');
@@ -9,9 +11,27 @@ const router = express.Router({ mergeParams: true });
 
 router.get('/', async (req, res) => {
 	try {
-		const rooms = await getRooms();
+		const {
+			page = 1,
+			limit = 10,
+			sortBy = 'price',
+			sortOrder = 'asc',
+			type,
+			minPrice,
+			maxPrice,
+			guests,
+		} = req.query;
 
-		res.send({ data: rooms.map(mapRoom) });
+		const filters = { type, minPrice, maxPrice, guests };
+		const sort = { sortBy, sortOrder };
+		const pagination = { page, limit };
+
+		const result = await getRooms(filters, sort, pagination);
+
+		res.send({
+			data: result.rooms.map(mapRoom),
+			pagination: result.pagination,
+		});
 	} catch (error) {
 		res.status(500).send({ error: error.message || 'Ошибка при получении номеров' });
 	}
@@ -80,6 +100,42 @@ router.delete('/:id', authenticated, isAdmin(), async (req, res) => {
 		res.send({ data: 'Номер успешно удален' });
 	} catch (error) {
 		res.status(500).send({ error: error.message || 'Ошибка при удалении номера' });
+	}
+});
+
+router.get('/:roomId/reviews', async (req, res) => {
+	try {
+		const reviews = await getRoomReviews(req.params.roomId);
+		res.send({ data: reviews.map(mapReview) });
+	} catch (error) {
+		res.status(500).send({ error: error.message || 'Ошибка при получении отзывов' });
+	}
+});
+
+router.post('/:roomId/reviews', authenticated, async (req, res) => {
+	try {
+		const review = await createReview(req.params.roomId, req.user.id, req.body.comment);
+
+		res.send({ data: mapReview(review) });
+	} catch (error) {
+		if (error.message === 'Комната не найдена') {
+			res.status(404).send({ error: error.message });
+		} else {
+			res.status(500).send({ error: error.message || 'Ошибка при создании отзыва' });
+		}
+	}
+});
+
+router.delete('/:roomId/reviews/:id', authenticated, isAdmin(), async (req, res) => {
+	try {
+		await deleteReview(req.params.id);
+		res.send({ data: 'Отзыв удален' });
+	} catch (error) {
+		if (error.message === 'Отзыв не найден') {
+			res.status(404).send({ error: error.message });
+		} else {
+			res.status(500).send({ error: error.message || 'Ошибка при удалении отзыва' });
+		}
 	}
 });
 

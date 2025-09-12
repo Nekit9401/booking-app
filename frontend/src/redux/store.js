@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { appReduсer, authReduсer, bookingReducer, roomReducer } from './slices';
+import { appReduсer, authReduсer, bookingReducer, reviewReducer, roomReducer } from './slices';
 
 export const store = configureStore({
 	reducer: {
@@ -7,5 +7,6 @@ export const store = configureStore({
 		auth: authReduсer,
 		bookings: bookingReducer,
 		room: roomReducer,
+		review: reviewReducer,
 	},
 });

@@ -1,10 +1,9 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { roomsApi } from '../services';
 
-export const fetchRooms = createAsyncThunk('rooms/fetchRooms', async (_, { rejectWithValue }) => {
+export const fetchRooms = createAsyncThunk('rooms/fetchRooms', async (params = {}, { rejectWithValue }) => {
 	try {
-		const response = await roomsApi.getRooms();
-
+		const response = await roomsApi.getRooms(params);
 		return response.data;
 	} catch (error) {
 		return rejectWithValue(error.response?.data || { error: 'Ошибка сети' });
